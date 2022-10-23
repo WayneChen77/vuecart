@@ -7,15 +7,17 @@
 
   <router-view />
 
-  <footer>this is footer</footer>
+  <Footer></Footer>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar.vue';
+import Footer from '@/components/FooterView.vue';
 
 export default {
   components: {
     NavBar,
+    Footer,
   },
 };
 </script>

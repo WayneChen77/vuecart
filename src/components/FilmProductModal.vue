@@ -32,29 +32,80 @@
                     type="text"
                     class="form-control"
                     placeholder="請輸入圖片連結"
-                    v-model="filmProduct.imgurls"
+                    v-model="filmProduct.imageUrl"
                 /></label>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  @click="filmProduct.imageUrl = ''"
+                >
+                  移除
+                </button>
               </div>
               <div class="mb-3">
                 <label for="customFile" class="form-label"
                   >或 上傳圖片 <i class="fas fa-spinner fa-spin"></i
-                  ><input type="file" class="form-control" />
+                  ><input type="file" class="form-control" ref="fileInput" @change="uploadFile" />
                 </label>
+                <div><img class="w-100" :src="filmProduct.imageUrl" alt="" /></div>
               </div>
               <img class="img-fluid" alt="" />
               <!-- 延伸技巧，多圖 -->
-              <div class="mt-5">
+              <!-- <div class="mt-5">
                 <div class="mb-3 input-group">
                   <input
                     type="url"
                     class="form-control form-control"
                     placeholder="請輸入連結"
-                    v-model="filmProduct.imgurl"
+                    v-model="filmProduct.imagesUrl"
                   />
                   <button type="button" class="btn btn-outline-danger">移除</button>
                 </div>
                 <div>
                   <button class="btn btn-outline-primary btn-sm d-block w-100">新增圖片</button>
+                </div>
+              </div> -->
+              <div class="mt-5" v-if="filmProduct.images">
+                <div v-for="(image, key) in filmProduct.images" class="mb-3 input-group" :key="key">
+                  <input
+                    type="url"
+                    class="form-control form-control"
+                    v-model="filmProduct.images[key]"
+                    placeholder="請輸入連結"
+                  />
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger"
+                    @click="filmProduct.images.splice(key, 1)"
+                  >
+                    移除
+                  </button>
+                  <div class="mb-3">
+                    <!-- <label for="customFile" class="form-label"
+                      >或 上傳圖片 <i class="fas fa-spinner fa-spin"></i>
+                    </label> -->
+                    <input
+                      id="customFile"
+                      type="file"
+                      class="form-control"
+                      ref="fileInputs"
+                      @change="uploadFiles(key)"
+                    />
+                    <img class="img-fluid" src="image" alt="" />
+                  </div>
+                </div>
+                <div
+                  v-if="
+                    filmProduct.images[filmProduct.images.length - 1] || !filmProduct.images.length
+                  "
+                >
+                  <button
+                    class="btn btn-outline-primary btn-sm d-block w-100"
+                    @click="filmProduct.images.push('')"
+                  >
+                    新增圖片
+                  </button>
                 </div>
               </div>
             </div>
@@ -111,7 +162,7 @@
                       id="origin_price"
                       type="number"
                       class="form-control"
-                      placeholder="請輸入全票"
+                      placeholder="請輸入票價"
                       v-model="filmProduct.origin_price"
                   /></label>
                 </div>
@@ -191,7 +242,7 @@ import Modal from 'bootstrap/js/dist/modal';
 
 export default {
   data() {
-    return { modal: {}, filmProduct: {} };
+    return { modal: {}, filmProduct: {}, isimgs: true };
   },
   props: {
     product: { type: Object },
@@ -202,6 +253,9 @@ export default {
   watch: {
     product() {
       this.filmProduct = this.product;
+      if (!this.filmProduct.images) {
+        this.filmProduct.images = [];
+      }
     },
   },
   methods: {
@@ -211,7 +265,42 @@ export default {
     hideModal() {
       this.modal.hide();
     },
+    uploadFile() {
+      const uploadedFile = this.$refs.fileInput.files[0];
+      console.dir(this.$refs.fileInput);
+      //   const uploadedFile = this.$refs.fileInputs.files[0];
+      //   console.dir(this.$refs.fileInputs);
+      const formData = new FormData();
+      formData.append('file-to-upload', uploadedFile);
+      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`;
+      this.$http.post(url, formData).then((response) => {
+        console.log(response.data);
+        if (response.data.success) {
+          this.filmProduct.imageUrl = response.data.imageUrl;
+        }
+      });
+    },
+    uploadFiles(key) {
+      // 問題點 為什麼this.$refs.fileInputs取的到值
+      // this.$refs.fileInputs.files卻underfined
+
+      console.log(key);
+      console.dir(this.$refs.fileInputs.files);
+      console.log(this.$refs.fileInputs.files);
+      //   this.$refs.fileInputs.files.forEach((element) => {
+      //     const uploadedFile = element; // 取得檔案
+      //     const formData = new FormData();
+      //     formData.append('file-to-upload', uploadedFile);
+      //     const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`;
+      //     this.axios.post(api, formData).then((response) => {
+      //       if (response.data.success) {
+      //         this.filmProduct.images[key].push(response.data.imageUrl);
+      //       }
+      //     });
+      //   });
+    },
   },
+
   mounted() {
     // this.modal = $('#modal').modal(options);
     this.modal = new Modal(this.$refs.modal);
