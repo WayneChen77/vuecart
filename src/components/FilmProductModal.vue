@@ -42,6 +42,7 @@
                   移除
                 </button>
               </div>
+
               <div class="mb-3">
                 <label for="customFile" class="form-label"
                   >或 上傳圖片 <i class="fas fa-spinner fa-spin"></i
@@ -50,22 +51,22 @@
                 <div><img class="w-100" :src="filmProduct.imageUrl" alt="" /></div>
               </div>
               <img class="img-fluid" alt="" />
-              <!-- 延伸技巧，多圖 -->
-              <!-- <div class="mt-5">
-                <div class="mb-3 input-group">
-                  <input
-                    type="url"
-                    class="form-control form-control"
-                    placeholder="請輸入連結"
-                    v-model="filmProduct.imagesUrl"
-                  />
-                  <button type="button" class="btn btn-outline-danger">移除</button>
-                </div>
-                <div>
-                  <button class="btn btn-outline-primary btn-sm d-block w-100">新增圖片</button>
-                </div>
-              </div> -->
+
               <div class="mt-5" v-if="filmProduct.images">
+                <div class="mb-3">
+                  <label for="customFile" class="form-label"
+                    >新增 其餘圖片
+                    <input
+                      id="customFile"
+                      type="file"
+                      class="form-control"
+                      ref="fileInputs"
+                      @change="uploadFiles(key)"
+                      multiple
+                    /><i class="fas fa-spinner fa-spin"></i>
+                  </label>
+                </div>
+
                 <div v-for="(image, key) in filmProduct.images" class="mb-3 input-group" :key="key">
                   <input
                     type="url"
@@ -73,7 +74,6 @@
                     v-model="filmProduct.images[key]"
                     placeholder="請輸入連結"
                   />
-
                   <button
                     type="button"
                     class="btn btn-outline-danger"
@@ -81,19 +81,6 @@
                   >
                     移除
                   </button>
-                  <div class="mb-3">
-                    <!-- <label for="customFile" class="form-label"
-                      >或 上傳圖片 <i class="fas fa-spinner fa-spin"></i>
-                    </label> -->
-                    <input
-                      id="customFile"
-                      type="file"
-                      class="form-control"
-                      ref="fileInputs"
-                      @change="uploadFiles(key)"
-                    />
-                    <img class="img-fluid" src="image" alt="" />
-                  </div>
                 </div>
                 <div
                   v-if="
@@ -104,9 +91,54 @@
                     class="btn btn-outline-primary btn-sm d-block w-100"
                     @click="filmProduct.images.push('')"
                   >
-                    新增圖片
+                    新增其餘圖片網址
                   </button>
                 </div>
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                  <div class="carousel-inner">
+                    <div
+                      class="carousel-item active"
+                      v-for="(image, key) in filmProduct.images"
+                      :key="key"
+                    >
+                      <img :src="image" :id="'圖片+image'" class="d-block w-100" alt="..." />
+                    </div>
+                  </div>
+                  <button
+                    class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#carouselExampleControls"
+                    data-bs-slide="prev"
+                  >
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button
+                    class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#carouselExampleControls"
+                    data-bs-slide="next"
+                  >
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+
+                <!--  -->
+                <swiper
+                  :modules="modules"
+                  :slides-per-view="1"
+                  :space-between="50"
+                  navigation
+                  :pagination="{ clickable: true }"
+                  :scrollbar="{ draggable: true }"
+                >
+                  <swiper-slide>Slide 1</swiper-slide>
+                  <swiper-slide>Slide 2</swiper-slide>
+                  <swiper-slide>Slide 3</swiper-slide>
+                  ...
+                </swiper>
+                <!-- <button @click="swiper.slideNext()">Slide to the next slide</button> -->
               </div>
             </div>
             <div class="col-sm-8">
@@ -240,9 +272,27 @@
 <script>
 import Modal from 'bootstrap/js/dist/modal';
 
+import { Swiper, SwiperSlide } from 'swiper/vue';
+
+// 應該設定在哪個位置
+// import { useSwiper } from 'swiper/vue';
+// import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+// 為什麼沒有引入Scrollbar 目前有滑動功能
+
+import 'swiper/swiper.min.css';
+
+// 找不到路徑...
+// import 'swiper/css/navigation';
+// import 'swiper/css/pagination';
+// import 'swiper/css/scrollbar';
+
 export default {
   data() {
-    return { modal: {}, filmProduct: {}, isimgs: true };
+    return { modal: {}, filmProduct: {} };
+  },
+  components: {
+    Swiper,
+    SwiperSlide,
   },
   props: {
     product: { type: Object },
@@ -267,9 +317,6 @@ export default {
     },
     uploadFile() {
       const uploadedFile = this.$refs.fileInput.files[0];
-      console.dir(this.$refs.fileInput);
-      //   const uploadedFile = this.$refs.fileInputs.files[0];
-      //   console.dir(this.$refs.fileInputs);
       const formData = new FormData();
       formData.append('file-to-upload', uploadedFile);
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`;
@@ -280,29 +327,21 @@ export default {
         }
       });
     },
-    uploadFiles(key) {
-      // 問題點 為什麼this.$refs.fileInputs取的到值
-      // this.$refs.fileInputs.files卻underfined
 
-      console.log(key);
-      console.dir(this.$refs.fileInputs.files);
-      console.log(this.$refs.fileInputs.files);
-      //   this.$refs.fileInputs.files.forEach((element) => {
-      //     const uploadedFile = element; // 取得檔案
-      //     const formData = new FormData();
-      //     formData.append('file-to-upload', uploadedFile);
-      //     const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`;
-      //     this.axios.post(api, formData).then((response) => {
-      //       if (response.data.success) {
-      //         this.filmProduct.images[key].push(response.data.imageUrl);
-      //       }
-      //     });
-      //   });
+    uploadFiles() {
+      const uploadedFile = this.$refs.fileInputs.files[0];
+      const formData = new FormData();
+      formData.append('file-to-upload', uploadedFile);
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`;
+      this.axios.post(api, formData).then((response) => {
+        if (response.data.success) {
+          this.filmProduct.images.push(response.data.imageUrl);
+        }
+      });
     },
   },
 
   mounted() {
-    // this.modal = $('#modal').modal(options);
     this.modal = new Modal(this.$refs.modal);
   },
 };

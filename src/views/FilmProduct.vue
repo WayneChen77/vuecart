@@ -1,15 +1,11 @@
 <template>
+  <!-- 全域原件 -->
+  <LoadingView :active="isLoading"></LoadingView>
+
   <div class="text-end">
     this 控制台
     <button class="btn btn-titleblue" @click="openModal(true)">新增映演</button>
   </div>
-
-  <FilmProductModal
-    :product="filmproduct"
-    @update-product="updateProduct"
-    ref="FilmProductModal"
-  ></FilmProductModal>
-  <DeleteModal :product="filmproduct" @del-item="delitem" ref="DeleteModal"></DeleteModal>
 
   <table class="table mt-4">
     <thead>
@@ -53,6 +49,13 @@
       </tr>
     </tbody>
   </table>
+  <!-- 區域原件 -->
+  <FilmProductModal
+    :product="filmproduct"
+    @update-product="updateProduct"
+    ref="FilmProductModal"
+  ></FilmProductModal>
+  <DeleteModal :product="filmproduct" @del-item="delitem" ref="DeleteModal"></DeleteModal>
 </template>
 
 <script>
@@ -61,7 +64,14 @@ import DeleteModal from '@/components/DeleteModal.vue';
 
 export default {
   data() {
-    return { filmproducts: [], pagination: [], testuse: {}, filmproduct: {}, isNew: false };
+    return {
+      filmproducts: [],
+      pagination: [],
+      testuse: {},
+      filmproduct: {},
+      isNew: false,
+      isLoading: false,
+    };
   },
   components: { FilmProductModal, DeleteModal },
   methods: {
@@ -86,24 +96,33 @@ export default {
     },
     // 刪除資料/api/:api_path/admin/product/:product_id
     delitem(item) {
-      console.log(item.id);
+      // 開啟讀取效果
+      this.isLoading = true;
       this.filmproduct = item;
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${item.id}`;
       this.$http
         .delete(Api)
         .then((res) => {
-          alert(res.data.message);
+          // 關閉讀取效果
+          this.isLoading = false;
+          const modal = this.$refs.DeleteModal;
+          this.getfilmproducts();
+          modal.hideModal();
+          this.emitter.emit('push-msg', {
+            style: 'danger',
+            title: res.data.message,
+            content: res.data.message,
+          });
         })
         .catch((e) => {
           console.log(e);
         });
-      const modal = this.$refs.DeleteModal;
-      this.getfilmproducts();
-      modal.hideModal();
     },
     // /api/:api_path/admin/products
     // /api/:api_path/admin/product
     updateProduct(item) {
+      // 開啟讀取效果
+      this.isLoading = true;
       this.filmproduct = item;
       const modal = this.$refs.FilmProductModal;
       // 新增
@@ -111,15 +130,31 @@ export default {
       let httpMethod = 'post';
       //   修改
       if (!this.isNew) {
-        console.log('ddd');
         Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${item.id}`;
         httpMethod = 'put';
       }
-
+      // 這邊如果將modal 放到139行
+      modal.hideModal();
       this.$http[httpMethod](Api, { data: this.filmproduct }).then((res) => {
-        console.log(res);
-        modal.hideModal();
-        this.getfilmproducts();
+        // 如果放到這 或141下方 load都會被moadl蓋住 是否要使用css設定z-index還是有內建設定的方式
+        // 關閉讀取效果
+        this.isLoading = false;
+
+        if (res.data.success) {
+          this.getfilmproducts();
+
+          this.emitter.emit('push-msg', {
+            style: 'success',
+            title: res.data.message,
+            content: res.data.message,
+          });
+        } else {
+          this.emitter.emit('push-msg', {
+            style: 'warning',
+            title: '更新失敗',
+            content: res.data.message.join(','),
+          });
+        }
       });
     },
     getfilmproducts() {
@@ -129,36 +164,14 @@ export default {
         .then((res) => {
           this.filmproducts = res.data.products;
           this.pagination = res.data.pagination;
-          console.log(this.filmproducts);
-
-          //   //  將傳來的字串整個改成物件 如何將"物件"修改他不是"陣列"
-          //   //   const haha = this.filmproducts.map((i) => {
-          //   //     // // eslint-disable-next-line
-          //   //     // const jsObja = eval('(' + i + ')');
-          //   //     // console.log(typeof jsObja);
-          //   //     // console.log(jsObja.放映時間);
-          //   //     // console.log(i.content);
-          //   //     console.log(i.indexOf(i.content));
-
-          //   //     return 'ha';
-          //   //   });
-          //   //   console.log(haha);
-
-          //   //   以下測試使用
-
-          //   const jsObj = res.data.products[2].content;
-
-          //   // eslint-disable-next-line
-          //   const jsObja = eval('(' + jsObj + ')');
-          //   this.testuse = jsObja;
-          //   console.log(typeof jsObja);
-          //   console.log(jsObja.放映時間);
         })
         .catch((e) => {
           console.log(e);
         });
     },
   },
+  //   從最父層取得bus使用 用來傳遞原件資料
+  inject: ['emitter'],
   created() {
     this.getfilmproducts();
   },

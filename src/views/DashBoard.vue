@@ -1,9 +1,22 @@
 <template>
   <div class="container-fluid">後台管理<router-view></router-view></div>
+  <ToastMessages></ToastMessages>
 </template>
 
 <script>
+// 使用mitt 直接父傳子下去讓所有原件使用 減少import程式碼
+import ToastMessages from '@/components/ToastMessages.vue';
+import mitt from 'mitt';
+
+const emitter = mitt();
+
 export default {
+  components: {
+    ToastMessages,
+  },
+  provide() {
+    return { emitter };
+  },
   created() {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)userToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
     this.$http.defaults.headers.common.Authorization = token;
@@ -13,8 +26,6 @@ export default {
     this.$http
       .post(Api)
       .then((res) => {
-        console.log(res.data);
-
         if (!res.data.success) {
           this.$router.push('login');
         }

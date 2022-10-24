@@ -19,7 +19,7 @@
     </div> -->
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header bg-warning">
           <h1 class="modal-title fs-5" id="exampleModalLabel">刪除場次</h1>
           <button
             type="button"
@@ -41,8 +41,10 @@
           </h5>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary">確認刪除</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" @click="$emit('del-item', product)">
+            確認刪除
+          </button>
+          <button type="button" class="btn btn-secondary" @click="hideModal">取消</button>
         </div>
       </div>
     </div>
@@ -50,7 +52,8 @@
 </template>
 
 <script>
-import Modal from 'bootstrap/js/dist/modal';
+// import Modal from 'bootstrap/js/dist/modal';
+import modalmixiins from '@/mixins/modalmixins';
 
 export default {
   data() {
@@ -64,17 +67,18 @@ export default {
       return {};
     },
   },
-  mounted() {
-    this.modal = new Modal(this.$refs.modal);
-  },
-  methods: {
-    showModal() {
-      this.modal.show();
-    },
-    hideModal() {
-      this.modal.hide();
-    },
-  },
+  mixins: [modalmixiins],
+  //   mounted() {
+  //     this.modal = new Modal(this.$refs.modal);
+  //   },
+  //   methods: {
+  //     showModal() {
+  //       this.modal.show();
+  //     },
+  //     hideModal() {
+  //       this.modal.hide();
+  //     },
+  //   },
 };
 </script>
 
