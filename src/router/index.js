@@ -8,10 +8,10 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/about',
-    name: 'about',
+    path: '/FilmAboutView',
+    name: 'FilmAboutView',
 
-    component: () => import('../views/AboutView.vue'),
+    component: () => import('../views/FilmAboutView.vue'),
     children: [
       {
         path: 'comming',

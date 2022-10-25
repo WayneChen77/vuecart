@@ -308,6 +308,7 @@ $light: $gray-100 !default;
 $dark: $gray-900 !default;
 //自定
 $titleblue: #2660a9;
+
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -322,6 +323,7 @@ $theme-colors: (
   'dark': $dark,
   // 自定
   'titleblue': $titleblue,
+  'gray': gray,
 ) !default;
 // scss-docs-end theme-colors-map
 
@@ -1245,9 +1247,11 @@ $card-spacer-x: $spacer !default;
 $card-title-spacer-y: $spacer * 0.5 !default;
 $card-border-width: $border-width !default;
 $card-border-color: var(--#{$prefix}border-color-translucent) !default;
+
 $card-border-radius: $border-radius !default;
 $card-box-shadow: null !default;
-$card-inner-border-radius: subtract($card-border-radius, $card-border-width) !default;
+// 自定 關閉原外角
+// $card-inner-border-radius: subtract($card-border-radius, $card-border-width) !default;
 $card-cap-padding-y: $card-spacer-y * 0.5 !default;
 $card-cap-padding-x: $card-spacer-x !default;
 $card-cap-bg: rgba($black, 0.03) !default;

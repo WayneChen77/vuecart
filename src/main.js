@@ -7,7 +7,7 @@ import Loading from 'vue3-loading-overlay';
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
 
 // 套用千分號
-import { currency } from './methods/filter';
+import { currency, date } from './methods/filter';
 import App from './App.vue';
 import router from './router';
 
@@ -16,6 +16,7 @@ const app = createApp(App);
 // 套用全域千分號
 app.config.globalProperties.$filters = {
   currency,
+  date,
 };
 
 app.component('LoadingView', Loading);

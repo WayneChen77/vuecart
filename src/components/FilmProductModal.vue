@@ -111,25 +111,61 @@
               </div>
             </div>
             <div class="col-sm-8">
-              <div class="mb-3">
-                <label for="title" class="form-label"
-                  >電影名稱<input
-                    id="title"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入名稱"
-                    v-model="filmProduct.title"
-                /></label>
-              </div>
-              <div class="mb-3">
-                <label for="theater" class="form-label"
-                  >影廳號碼<input
-                    id="title"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入名稱"
-                    v-model="filmProduct.theater"
-                /></label>
+              <div class="row gx-2">
+                <div class="mb-3 col-md-4">
+                  <label for="title" class="form-label"
+                    >電影名稱<input
+                      id="title"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入名稱"
+                      v-model="filmProduct.title"
+                  /></label>
+                  <label for="title" class="form-label"
+                    >英文名稱<input
+                      id="title"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入名稱"
+                      v-model="filmProduct.engtitle"
+                  /></label>
+                </div>
+                <div class="mb-3 col-md-4">
+                  <label for="title" class="form-label"
+                    >電影分級<input
+                      id="title"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入名稱"
+                      v-model="filmProduct.grand"
+                  /></label>
+                  <label for="title" class="form-label"
+                    >電影版本<input
+                      id="title"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入名稱"
+                      v-model="filmProduct.version"
+                  /></label>
+                </div>
+                <div class="mb-3 col-md-4">
+                  <label for="title" class="form-label"
+                    >上映日期<input
+                      id="title"
+                      type="date"
+                      class="form-control"
+                      placeholder="請輸入名稱"
+                      v-model="filmProduct.day"
+                  /></label>
+                  <label for="title" class="form-label"
+                    >場次時間<input
+                      id="title"
+                      type="number"
+                      class="form-control"
+                      placeholder="請輸入名稱"
+                      v-model="filmProduct.time"
+                  /></label>
+                </div>
               </div>
 
               <div class="row gx-2">
@@ -179,30 +215,85 @@
                 </div>
               </div>
               <hr />
-
-              <div class="mb-3">
-                <label for="description" class="form-label"
-                  >產品描述
-                  <textarea
-                    id="description"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入描述"
-                    v-model="filmProduct.description"
-                  ></textarea>
-                </label>
+              <div class="row gx-2">
+                <div class="mb-3 col-md-6">
+                  <label for="description" class="form-label"
+                    >電影介紹
+                    <textarea
+                      id="description"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入描述"
+                      v-model="filmProduct.description"
+                    ></textarea>
+                  </label>
+                  <label for="category" class="form-label"
+                    >片長<input
+                      id="category"
+                      type="number"
+                      class="form-control"
+                      placeholder="請輸入分類"
+                      v-model="filmProduct.flength"
+                  /></label>
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="category" class="form-label"
+                    >導演<input
+                      id="category"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入分類"
+                      v-model="filmProduct.director"
+                  /></label>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="content" class="form-label"
-                  >說明內容
-                  <textarea
-                    id="content"
-                    type="text"
-                    class="form-control"
-                    placeholder="請輸入說明內容"
-                    v-model="filmProduct.content"
-                  ></textarea>
-                </label>
+              <div class="row gx-2">
+                <div class="mb-3 col-md-6">
+                  <label for="content" class="form-label"
+                    >說明內容
+                    <textarea
+                      id="content"
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入說明內容"
+                      v-model="filmProduct.content"
+                    ></textarea>
+                  </label>
+                </div>
+                <div class="mb-3 col-md-6" v-if="filmProduct.actors">
+                  <div
+                    v-for="(image, key) in filmProduct.actors"
+                    class="mb-3 input-group"
+                    :key="key"
+                  >
+                    <input
+                      type="text"
+                      class="form-control form-control"
+                      v-model="filmProduct.actors[key]"
+                      placeholder="請輸入名字"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      @click="filmProduct.actors.splice(key, 1)"
+                    >
+                      移除
+                    </button>
+                  </div>
+                  <div
+                    v-if="
+                      filmProduct.actors[filmProduct.actors.length - 1] ||
+                      !filmProduct.actors.length
+                    "
+                  >
+                    <button
+                      class="btn btn-outline-primary btn-sm d-block w-100"
+                      @click="filmProduct.actors.push('')"
+                    >
+                      新增演員名單
+                    </button>
+                  </div>
+                </div>
               </div>
               <div class="mb-3">
                 <div class="form-check">
@@ -267,6 +358,9 @@ export default {
       this.filmProduct = this.product;
       if (!this.filmProduct.images) {
         this.filmProduct.images = [];
+      }
+      if (!this.filmProduct.actors) {
+        this.filmProduct.actors = [];
       }
     },
   },

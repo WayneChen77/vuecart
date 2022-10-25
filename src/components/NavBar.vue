@@ -20,7 +20,7 @@
               <router-link class="nav-link" to="/">影院介紹</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/about">電影介紹</router-link>
+              <router-link class="nav-link" to="/FilmAboutView">電影介紹</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/#">販賣部</router-link>

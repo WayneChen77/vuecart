@@ -6,20 +6,20 @@
     this 控制台
     <button class="btn btn-titleblue" @click="openModal(true)">新增映演</button>
   </div>
-
+  {{ filmproducts[9] }}
   <table class="table mt-4">
     <thead>
       <tr>
         <th width="120">分類</th>
         <th>電影名稱</th>
         <th>影廳</th>
-        <th>放映時間</th>
-        <th>廳位數</th>
+        <th>上映時間</th>
+        <th>級別</th>
         <th>剩餘坐位</th>
         <th width="120">全票</th>
         <th width="120">學生票</th>
         <th width="120">愛心票</th>
-        <th width="100">是否上映</th>
+        <th width="100">熱映中</th>
         <th width="200">編輯</th>
       </tr>
     </thead>
@@ -28,8 +28,8 @@
         <td>{{ i.category }}</td>
         <td>{{ i.title }}</td>
         <td>{{ i.theater }}</td>
-        <td>{{ i.放映時間 }}</td>
-        <td>{{ i.unit }}</td>
+        <td>{{ i.day }}</td>
+        <td>{{ i.grand }}</td>
         <td>{{ i.unit - i.售出 }}</td>
         <td class="text-right">{{ $filters.currency(i.origin_price) }}</td>
         <td class="text-right">{{ $filters.currency(i.price) }}</td>
