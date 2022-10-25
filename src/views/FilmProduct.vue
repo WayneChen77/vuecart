@@ -31,8 +31,8 @@
         <td>{{ i.放映時間 }}</td>
         <td>{{ i.unit }}</td>
         <td>{{ i.unit - i.售出 }}</td>
-        <td class="text-right">{{ i.origin_price }}</td>
-        <td class="text-right">{{ i.price }}</td>
+        <td class="text-right">{{ $filters.currency(i.origin_price) }}</td>
+        <td class="text-right">{{ $filters.currency(i.price) }}</td>
         <td class="text-right">{{ i.origin_price * 0.4 }}</td>
         <td>
           <span class="text-success" v-if="i.is_enabled">上映</span>
@@ -50,6 +50,7 @@
     </tbody>
   </table>
   <!-- 區域原件 -->
+  <FilmPagination :pages="pagination" @change-pagination="getfilmproducts"></FilmPagination>
   <FilmProductModal
     :product="filmproduct"
     @update-product="updateProduct"
@@ -61,19 +62,24 @@
 <script>
 import FilmProductModal from '@/components/FilmProductModal.vue';
 import DeleteModal from '@/components/DeleteModal.vue';
+// 分頁資訊
+import FilmPagination from '@/components/FilmPagination.vue';
 
 export default {
   data() {
     return {
+      // 所有資料
       filmproducts: [],
+      // 頁碼資料 傳往下層處理
       pagination: [],
       testuse: {},
+      // 要傳往modal處理的資料
       filmproduct: {},
       isNew: false,
       isLoading: false,
     };
   },
-  components: { FilmProductModal, DeleteModal },
+  components: { FilmProductModal, DeleteModal, FilmPagination },
   methods: {
     openModal(isNew, item) {
       if (isNew) {
@@ -157,13 +163,16 @@ export default {
         }
       });
     },
-    getfilmproducts() {
-      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products`;
+    getfilmproducts(page = 1) {
+      this.isLoading = true;
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products/?page=${page}`;
       this.$http
         .get(Api)
         .then((res) => {
           this.filmproducts = res.data.products;
           this.pagination = res.data.pagination;
+
+          this.isLoading = false;
         })
         .catch((e) => {
           console.log(e);

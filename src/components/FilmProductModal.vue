@@ -94,35 +94,6 @@
                     新增其餘圖片網址
                   </button>
                 </div>
-                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                  <div class="carousel-inner">
-                    <div
-                      class="carousel-item active"
-                      v-for="(image, key) in filmProduct.images"
-                      :key="key"
-                    >
-                      <img :src="image" :id="'圖片+image'" class="d-block w-100" alt="..." />
-                    </div>
-                  </div>
-                  <button
-                    class="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#carouselExampleControls"
-                    data-bs-slide="prev"
-                  >
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                  </button>
-                  <button
-                    class="carousel-control-next"
-                    type="button"
-                    data-bs-target="#carouselExampleControls"
-                    data-bs-slide="next"
-                  >
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                  </button>
-                </div>
 
                 <!--  -->
                 <swiper
@@ -133,12 +104,10 @@
                   :pagination="{ clickable: true }"
                   :scrollbar="{ draggable: true }"
                 >
-                  <swiper-slide>Slide 1</swiper-slide>
-                  <swiper-slide>Slide 2</swiper-slide>
-                  <swiper-slide>Slide 3</swiper-slide>
-                  ...
+                  <swiper-slide v-for="(image, key) in filmProduct.images" :key="key"
+                    ><img :src="image" :id="'圖片+image'" class="d-block w-100" alt="..."
+                  /></swiper-slide>
                 </swiper>
-                <!-- <button @click="swiper.slideNext()">Slide to the next slide</button> -->
               </div>
             </div>
             <div class="col-sm-8">
@@ -275,20 +244,13 @@ import Modal from 'bootstrap/js/dist/modal';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
 // 應該設定在哪個位置
-// import { useSwiper } from 'swiper/vue';
-// import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
-// 為什麼沒有引入Scrollbar 目前有滑動功能
 
-import 'swiper/swiper.min.css';
-
-// 找不到路徑...
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
-// import 'swiper/css/scrollbar';
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+import 'swiper/swiper-bundle.css';
 
 export default {
   data() {
-    return { modal: {}, filmProduct: {} };
+    return { modal: {}, filmProduct: {}, modules: [Navigation, Pagination, Scrollbar, A11y] };
   },
   components: {
     Swiper,
