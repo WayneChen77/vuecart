@@ -35,8 +35,12 @@
         <td class="text-right">{{ $filters.currency(i.price) }}</td>
         <td class="text-right">{{ i.origin_price * 0.4 }}</td>
         <td>
-          <span class="text-success" v-if="i.is_enabled">上映</span>
-          <span class="text-success" v-else>下映</span>
+          <span class="text-success" v-if="i.is_showing"
+            >showwing{{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}</span
+          >
+          <span class="text-success" v-if="!i.is_showing"
+            >comming {{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}
+          </span>
         </td>
         <td>
           <div class="btn-group">
@@ -171,7 +175,7 @@ export default {
         .then((res) => {
           this.filmproducts = res.data.products;
           this.pagination = res.data.pagination;
-
+          console.log(res.data);
           this.isLoading = false;
         })
         .catch((e) => {

@@ -1,33 +1,45 @@
 <template>
+  <!-- 全域原件 -->
+  <LoadingView :active="isLoading"></LoadingView>
   <div class="about container">
     <nav aria-label="breadcrumb" class="p-2">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">首頁</a></li>
         <li class="breadcrumb-item">
-          <router-link to="/FilmAboutView/showing">全部</router-link>
+          <a href="#" @click.prevent="isShowwing = null" @Keyup.enter.prevent="isShowwing = null"
+            >全部</a
+          >
         </li>
         <li class="breadcrumb-item">
-          <router-link to="/FilmAboutView/showing">熱映中</router-link>
+          <a href="#" @click.prevent="isShowwing = 1" @Keyup.enter.prevent="isShowwing = 1"
+            >熱映中</a
+          >
         </li>
         <li class="breadcrumb-item">
-          <router-link to="/FilmAboutView/comming">即將上映</router-link>
+          <a href="#" @click.prevent="isShowwing = 0" @Keyup.enter.prevent="isShowwing = 0"
+            >即將上映</a
+          >
         </li>
         <li class="breadcrumb-item active" aria-current="page">Data</li>
       </ol>
     </nav>
-    <h2>api標題</h2>
+    <h2>{{ isShowwing == null ? 'All' : isShowwing == 1 ? '上映中' : '即將上映' }}</h2>
+
+    <button @click="cc">111</button>
     <router-view />
     <div class="row justify-content-md-center flex-wrap">
-      <div class="card m-4 flex-wrap" style="width: 16rem" v-for="i in filmproducts" :key="i.id">
+      <div class="card m-4 flex-wrap" style="width: 16rem" v-for="i in datastore" :key="i.id">
         <div class="titleimg">
-          <a href="#"><img :src="i.imageUrl" :alt="i.engtitle" /></a>
+          <a href="#" @click.prevent="userproduct(i.id)"
+            ><img :src="i.imageUrl" :alt="i.engtitle"
+          /></a>
         </div>
         <span class="badge badge-pill badge-primary bg-primary w-25 grand">{{ i.grand }}</span>
         <div class="card-body">
           <p class="rounded border border-gray w-25 text-gray text-center">{{ i.version }}</p>
 
           <h5 class="card-title">
-            <a href="#">{{ i.title }}</a>
+            <a href="#" @click.prevent="userproduct(i.id)">{{ i.title }}</a>
           </h5>
           <h5 class="card-title">{{ i.engtitle }}</h5>
           <p>日期{{ i.day }}</p>
@@ -44,12 +56,15 @@
 // @ is an alias to /src
 
 export default {
-  name: 'HomeView',
+  name: 'FilmAboutView',
   components: {},
   data() {
-    return { filmproducts: [], isLoading: false };
+    return { filmproducts: [], isLoading: false, isShowwing: null };
   },
   methods: {
+    userproduct(id) {
+      this.$router.push(`/userproduct/${id}`);
+    },
     getfilmproducts() {
       this.isLoading = true;
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/products/all`;
@@ -57,13 +72,34 @@ export default {
         .get(Api)
         .then((res) => {
           this.filmproducts = res.data.products;
-          // this.pagination = res.data.pagination;
-          console.log(this.filmproducts);
+          console.log(res.data);
+
           this.isLoading = false;
         })
         .catch((e) => {
           console.log(e);
         });
+    },
+    cc() {
+      console.log(this.filmproducts);
+    },
+  },
+  computed: {
+    //  搜尋過濾
+    datastore() {
+      // if (this.isShowwing === 1) {
+      //   console.log(this.isShowwing);
+      // }
+      if (this.isShowwing === 0) {
+        return this.filmproducts.filter((i) => i.is_showing === this.isShowwing);
+      }
+      if (this.isShowwing === 1) {
+        return this.filmproducts.filter((i) => i.is_showing === this.isShowwing);
+      }
+
+      return this.filmproducts;
+
+      // return this.filmproducts.filter((i) => i.Name.match(this.search));
     },
   },
   created() {

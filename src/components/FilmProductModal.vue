@@ -205,12 +205,20 @@
                 </div>
                 <div class="mb-3 col-md-6">
                   <label for="price" class="form-label"
-                    >學生票<input
+                    >學生票(待關閉)<input
                       id="price"
                       type="number"
                       class="form-control"
                       placeholder="請輸入學生票"
                       v-model="filmProduct.price"
+                  /></label>
+                  <label for="theater" class="form-label"
+                    >影廳<input
+                      id="price"
+                      type="number"
+                      class="form-control"
+                      placeholder="請輸入影廳"
+                      v-model="filmProduct.theater"
                   /></label>
                 </div>
               </div>
@@ -297,8 +305,8 @@
               </div>
               <div class="mb-3">
                 <div class="form-check">
-                  <label class="form-check-label" for="is_enabled">
-                    是否上映
+                  <label class="form-check-label mx-3" for="is_enabled">
+                    是否開放
                     <input
                       id="is_enabled"
                       class="form-check-input"
@@ -306,6 +314,18 @@
                       :true-value="1"
                       :false-value="0"
                       v-model="filmProduct.is_enabled"
+                  /></label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label mx-3" for="is_showing">
+                    showing?comming
+                    <input
+                      id="is_showing"
+                      class="form-check-input"
+                      type="checkbox"
+                      :true-value="1"
+                      :false-value="0"
+                      v-model="filmProduct.is_showing"
                   /></label>
                 </div>
               </div>
