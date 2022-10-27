@@ -6,7 +6,7 @@
     this 控制台
     <button class="btn btn-titleblue" @click="openModal(true)">新增映演</button>
   </div>
-  {{ filmproducts[9] }}
+  {{ filmproducts[0] }}
   <table class="table mt-4">
     <thead>
       <tr>
@@ -175,7 +175,7 @@ export default {
         .then((res) => {
           this.filmproducts = res.data.products;
           this.pagination = res.data.pagination;
-          console.log(res.data);
+          console.log(res.data.products[0].test);
           this.isLoading = false;
         })
         .catch((e) => {

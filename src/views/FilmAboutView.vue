@@ -29,7 +29,9 @@
     <router-view />
     <div class="row justify-content-md-center flex-wrap">
       <div class="card m-4 flex-wrap" style="width: 16rem" v-for="i in datastore" :key="i.id">
-        <div class="titleimg">
+        <div class="titleimg position-relative">
+          <div class="triangle"><div class="triangletxt">文字</div></div>
+
           <a href="#" @click.prevent="userproduct(i.id)"
             ><img :src="i.imageUrl" :alt="i.engtitle"
           /></a>
@@ -128,5 +130,39 @@ img {
 .titleimg {
   height: 20rem;
   object-fit: cover;
+  overflow: hidden;
+}
+//  三角形
+.triangle {
+  // width: 0;
+  // height: 0;
+  // border-top: 55px solid orange;
+  // border-left: 40px solid orange;
+  // border-bottom: 55px solid transparent;
+  // border-right: 40px solid transparent;
+  // position: absolute;
+  top: -60px;
+  left: -60px;
+  bottom: auto;
+  width: 120px;
+  height: 120px;
+  transform: rotate(-45deg);
+
+  background-color: orange;
+  position: absolute;
+}
+.triangletxt {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-weight: bold;
+
+  // position: absolute;
+  // z-index: 1;
+  // transform: rotate(-55deg);
+  // // top: 20px;
+  // left: 20px;
 }
 </style>

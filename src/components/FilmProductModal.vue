@@ -329,7 +329,93 @@
                   /></label>
                 </div>
               </div>
+              <!-- 待調整 關於資料格式 -->
+              <div class="mb-3 col-md-6" v-if="filmProduct.test">
+                <!-- 將影廳 時間細節跑回圈出來 -->
+                <div
+                  v-for="(item, index, key) in filmProduct.test"
+                  class="mb-3 input-group"
+                  :key="key"
+                >
+                  <!-- 點擊日期時 順便用ga設定 知後的座位 日期 影廳 格式 不然直接抓會抓不到 -->
+                  <div class="row">
+                    <input
+                      type="date"
+                      class="form-control col-8"
+                      v-model="filmProduct.test[index].day"
+                      @click="ga(index)"
+                    />
+                    <!-- 刪除此"日期場次資料" -->
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger col-4"
+                      @click="filmProduct.test.splice(index, 1)"
+                    >
+                      移除
+                    </button>
+                  </div>
+
+                  <!-- 如果有選擇日期咯 彈跳出時間 影廳細節 -->
+                  <div v-if="this.filmProduct.test[index].detail">
+                    <label for="theater" class="form-label"
+                      >影廳<input
+                        id="theater"
+                        type="text"
+                        class="form-control"
+                        placeholder="請輸入影廳"
+                        v-model="filmProduct.test[index].detail.theater"
+                    /></label>
+                    <!-- 這邊是迴圈鍾的迴圈 變數小心不要寫錯重複到 迴圈顯示目前有的場次時間  這邊是利用下方按鈕先push空資料才能出現輸入-->
+                    <div v-for="(notuse, i) in item.detail.time" class="mb-3 input-group" :key="i">
+                      <!-- 利用雙像綁定直接輸入資料  這邊用change在榜定時間後直接觸發 在資料內新增座位-->
+                      <input
+                        type="time"
+                        class="form-control form-control"
+                        v-model="filmProduct.test[index].detail.time[i].while"
+                        @change="addseat(index, i)"
+                      />
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger"
+                        @click="filmProduct.test[index].detail.time.splice(index, 1)"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <div>
+                      <!-- 這個按鈕讓時間迴圈有一個空資料 來給上面雙像綁定輸入資料用 -->
+                      <button
+                        class="btn btn-outline-primary btn-sm d-block w-100"
+                        @click="filmProduct.test[index].detail.time.push({})"
+                      >
+                        新增時間
+                      </button>
+                    </div>
+                    <!-- 備用 -->
+                    <!-- <label for="time" class="form-label"
+                      >場次時間<input
+                        id="time"
+                        type="time"
+                        class="form-control"
+                        placeholder="請輸入時間"
+                        v-model="filmProduct.test[index].detail.time"
+                    /></label> -->
+                  </div>
+                </div>
+
+                <div>
+                  <!-- 這邊push資料讓上方日期資料能夠顯示 -->
+                  <button
+                    class="btn btn-outline-primary btn-sm d-block w-100"
+                    @click="filmProduct.test.push({})"
+                  >
+                    新增場次
+                  </button>
+                </div>
+              </div>
             </div>
+
+            <!--  -->
           </div>
         </div>
         <div class="modal-footer">
@@ -382,9 +468,26 @@ export default {
       if (!this.filmProduct.actors) {
         this.filmProduct.actors = [];
       }
+      if (!this.filmProduct.test) {
+        this.filmProduct.test = [];
+        // this.filmProduct.test.day = [];
+      }
     },
   },
   methods: {
+    addseat(index, i) {
+      this.filmProduct.test[index].detail.time[i].seat = [
+        { a: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+        { b: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+      ];
+    },
+    ga(i) {
+      if (!this.filmProduct.test[i].detail) {
+        this.filmProduct.test[i].detail = {};
+        this.filmProduct.test[i].detail.time = [];
+      }
+    },
+
     showModal() {
       this.modal.show();
     },
@@ -423,4 +526,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.form-control.col-8 {
+  width: 66%;
+}
+</style>
