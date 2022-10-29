@@ -30,59 +30,45 @@
         <p>劇情簡介:</p>
         <p>{{ filmproduct.description }}</p>
       </div>
-      <div class="col bg-titleblue">
+      <div class="col">
         <p>請選擇日期及廳別場次:</p>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item">
+            <li class="p-2" v-for="(i, key) in futuerday" :key="key">
               <button
-                @click.prevent="azx"
+                @click="datastore(i)"
                 type="button"
                 class="rounded-circle btn btn-outline-danger"
+                :class="{ active: selectday === future(i - 1).today }"
               >
-                <span>10/28</span>
+                <!-- 數字跑v-for會只跑到1不會跑到0 正確資料要剪一 -->
+                <span> {{ `${future(i - 1).monthNow} / ${future(i - 1).dateNow}` }}</span>
                 <br />
-                <span>(五)</span>
+                <span> {{ future(i - 1).dayNow }}</span>
               </button>
             </li>
-            <li class="breadcrumb-item">
-              <button type="button" class="rounded-circle btn btn-outline-danger">
-                <span>10/28</span>
-                <br />
-                <span>(五)</span>
-              </button>
-            </li>
-            <li class="breadcrumb-item">
-              <button type="button" class="rounded-circle btn btn-outline-danger">
-                <span>10/28</span>
-                <br />
-                <span>(五)</span>
-              </button>
-            </li>
-            <li class="breadcrumb-item">
-              <button type="button" class="btn btn-outline-danger rounded-circle">Danger</button>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Data</li>
           </ol>
         </nav>
-        <div>
-          <span>聽別版本</span>
-          <hr class="用after做條線" />
-          <button type="button" class="btn btn-outline-secondary m-1" v-for="i in 5" :key="i">
-            Secondary{{ i }}
-          </button>
-        </div>
-        <div>
-          <span>聽別版本</span>
-          <hr class="用after做條線" />
-          <button type="button" class="btn btn-outline-secondary m-1" v-for="i in 5" :key="i">
-            Secondary{{ i }}
+        <!-- computed問題 改用函是處理 -->
+        <!-- <div v-for="(i, index, Key) in datastore" :key="Key"> -->
+
+        <div v-for="(i, index, Key) in productdata" :key="Key" class="theraterdata">
+          <p>{{ i.detail.theater }}</p>
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary m-1"
+            v-for="(a, index, key) in i.detail.time"
+            :key="key"
+            @click="buyticket(a.while, index)"
+          >
+            <span>{{ a.while }}</span>
           </button>
         </div>
       </div>
     </div>
   </div>
-  <div class="filmwhile container my-3">1</div>
+
   <div class="imgs py-4">
     <swiper
       class=""
@@ -112,8 +98,12 @@ export default {
     return {
       phonerwd: false,
       filmproduct: {},
+      productdata: {},
       isLoading: false,
       modules: [Navigation, Pagination, Scrollbar, A11y],
+      selectday: this.future().today,
+      // 顯示未來幾比日期
+      futuerday: 5,
     };
   },
   components: {
@@ -130,31 +120,70 @@ export default {
         .get(Api)
         .then((res) => {
           this.filmproduct = res.data.product;
-          console.log(res.data);
+
           this.isLoading = false;
         })
         .catch((e) => {
           console.log(e);
         });
     },
-    azx() {
-      const dateNow = new Date();
-      const yearNow = dateNow.getFullYear();
-      const monthNow = dateNow.getMonth() + 1;
-      const dayNow = dateNow.getDate();
-      const maxDate = `${yearNow}-${monthNow}-${dayNow}`;
-      const dd = this.filmproduct.test[0].day;
-      console.log(this.filmproduct.test[0].day);
-      console.log(typeof maxDate);
-      console.log(dd === '2022-10-19');
-      console.log(typeof Number(maxDate));
+    buyticket(i, index) {
+      const cart = {
+        day: this.productdata[index].day,
+        filmWhile: i,
+        product_id: this.filmproduct.id,
+        qty: 1,
+      };
+
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
+      this.$http
+        .post(Api, { data: cart })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((e) => {
+          console.loc(e);
+        });
+    },
+
+    // 取的未來時間並轉換為資料傳到畫面上
+    future(i = 0) {
+      const daynow = new Date(); // 获取当前日期
+
+      const milliseconds = daynow.getTime() + 1000 * 60 * 60 * 24 * i;
+      // 将当前日期转换为毫秒，加上需要增加的天数的毫秒，i表示天数
+
+      const newMyDate = new Date(milliseconds);
+
+      const yearNow = newMyDate.getFullYear();
+      const monthNow = newMyDate.getMonth() + 1;
+      const dateNow = newMyDate.getDate();
+
+      // 轉換星期1到星期一
+      const week = ['日', '一', '二', '三', '四', '五', '六'];
+      const dayNow = week[newMyDate.getDay()];
+      const today = `${yearNow}-${monthNow}-${dateNow}`;
+      return { yearNow, monthNow, dayNow, dateNow, today };
+    },
+    datastore(i) {
+      this.selectday = this.future(i - 1).today;
+      if (this.filmproduct !== {}) {
+        const a = this.filmproduct.test.filter((item) => item.day.match('2022-10-19'));
+        console.log(a[0].detail.time[1].while);
+        this.productdata = a;
+        // return a;
+      }
+      // return '';
     },
   },
-  // computed: {
-  //   //  搜尋過濾
-  //   datastore() {
-  //     return this.filmproduct.filter((i) => i.is_showing === this.isShowwing);
-
+  //   computed: {
+  //     //  日期過濾資料 會報錯 未定義資料 懷疑是this.filmproduct.test;定義問題 先用函是方法執行
+  //     datastore() {
+  //       if (this.filmproduct !== {}) {
+  //         const a = this.filmproduct.test;
+  //         return a.filter((i) => i.day.match('2022-10-19'));
+  //       }
+  //       return '';
   //     // return this.filmproducts.filter((i) => i.Name.match(this.search));
   //   },
   // },
@@ -180,5 +209,26 @@ img {
 .titleimg {
   height: 20rem;
   object-fit: cover;
+}
+.theraterdata {
+  position: relative;
+
+  & > p {
+    &::after {
+      content: '';
+      position: absolute;
+      left: 40px;
+      top: 12px;
+      max-width: 550px;
+      width: 100%;
+      height: 1px;
+      background-color: gray;
+      // background: -webkit-linear-gradient(90deg, #d8d8d8, transparent);
+      // background: -o-linear-gradient(90deg, #d8d8d8, transparent);
+      // background: -moz-linear-gradient(90deg, #d8d8d8, transparent);
+      background: linear-gradient(90deg, #d8d8d8, transparent);
+    }
+    color: blue;
+  }
 }
 </style>

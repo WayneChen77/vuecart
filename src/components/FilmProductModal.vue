@@ -377,7 +377,7 @@
                       <button
                         type="button"
                         class="btn btn-outline-danger"
-                        @click="filmProduct.test[index].detail.time.splice(index, 1)"
+                        @click="filmProduct.test[index].detail.time.splice(i, 1)"
                       >
                         移除
                       </button>

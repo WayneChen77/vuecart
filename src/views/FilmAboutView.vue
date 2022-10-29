@@ -52,14 +52,17 @@
       </div>
     </div>
   </div>
+  <!-- 掛載旁邊的選單  -->
+  <SearchFilm :searchproducts="filmproducts"></SearchFilm>
 </template>
 
 <script>
 // @ is an alias to /src
+import SearchFilm from '@/components/SearchFilm.vue';
 
 export default {
   name: 'FilmAboutView',
-  components: {},
+  components: { SearchFilm },
   data() {
     return { filmproducts: [], isLoading: false, isShowwing: null };
   },
@@ -134,13 +137,6 @@ img {
 }
 //  三角形
 .triangle {
-  // width: 0;
-  // height: 0;
-  // border-top: 55px solid orange;
-  // border-left: 40px solid orange;
-  // border-bottom: 55px solid transparent;
-  // border-right: 40px solid transparent;
-  // position: absolute;
   top: -60px;
   left: -60px;
   bottom: auto;
@@ -158,11 +154,5 @@ img {
   transform: translateX(-50%);
   color: white;
   font-weight: bold;
-
-  // position: absolute;
-  // z-index: 1;
-  // transform: rotate(-55deg);
-  // // top: 20px;
-  // left: 20px;
 }
 </style>
