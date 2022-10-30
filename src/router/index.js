@@ -32,6 +32,12 @@ const routes = [
     component: () => import('../views/UserProduct.vue'),
   },
   {
+    path: '/addticket',
+    name: 'addticket',
+
+    component: () => import('../views/AddTicket.vue'),
+  },
+  {
     path: '/login',
     name: 'login',
 

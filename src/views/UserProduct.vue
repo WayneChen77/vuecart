@@ -134,16 +134,17 @@ export default {
         product_id: this.filmproduct.id,
         qty: 1,
       };
-
-      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
-      this.$http
-        .post(Api, { data: cart })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((e) => {
-          console.loc(e);
-        });
+      console.log(cart);
+      // const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
+      // this.$http
+      //   .post(Api, { data: cart })
+      //   .then((res) => {
+      //     console.log(res);
+      //   })
+      //   .catch((e) => {
+      //     console.loc(e);
+      //   });
+      this.$router.push('/addticket');
     },
 
     // 取的未來時間並轉換為資料傳到畫面上

@@ -114,45 +114,47 @@ export default {
 };
 </script>
 <style lang="scss">
-.grand {
-  transform: translate(10%, -125%);
-}
-img {
-  width: 100%;
-  height: 100%;
-}
-.card {
-  border: none;
-  h5 a {
-    text-decoration: none;
+.about {
+  .grand {
+    transform: translate(10%, -125%);
   }
-}
-.card:hover {
-  background: rgb(189, 187, 187);
-}
-.titleimg {
-  height: 20rem;
-  object-fit: cover;
-  overflow: hidden;
-}
-//  三角形
-.triangle {
-  top: -60px;
-  left: -60px;
-  bottom: auto;
-  width: 120px;
-  height: 120px;
-  transform: rotate(-45deg);
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  .card {
+    border: none;
+    h5 a {
+      text-decoration: none;
+    }
+  }
+  .card:hover {
+    background: rgb(189, 187, 187);
+  }
+  .titleimg {
+    height: 20rem;
+    object-fit: cover;
+    overflow: hidden;
+  }
+  //  三角形
+  .triangle {
+    top: -60px;
+    left: -60px;
+    bottom: auto;
+    width: 120px;
+    height: 120px;
+    transform: rotate(-45deg);
 
-  background-color: orange;
-  position: absolute;
-}
-.triangletxt {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  font-weight: bold;
+    background-color: orange;
+    position: absolute;
+  }
+  .triangletxt {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-weight: bold;
+  }
 }
 </style>

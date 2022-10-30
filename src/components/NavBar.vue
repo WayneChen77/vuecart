@@ -4,10 +4,11 @@
       <nav class="navbar navbar-expand-lg navbar-titleblue bg-titleblue">
         <router-link class="text-light" to="/">XX影城</router-link>
         <button
+          ref="navbarBtn"
           class="navbar-toggler"
           type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -41,7 +42,15 @@
 </template>
 
 <script>
-export default {};
+export default {
+  watch: {
+    $route() {
+      if (document.body.offsetWidth < 992) {
+        this.$refs.navbarBtn.click();
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

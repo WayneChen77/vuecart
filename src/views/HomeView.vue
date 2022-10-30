@@ -142,6 +142,12 @@
             class="d-block w-100"
             alt="'圖片+i'"
         /></swiper-slide>
+        <swiper-slide>
+          <img
+            src="https://images.pexels.com/photos/2337785/pexels-photo-2337785.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            class="d-block w-100"
+            alt="'圖片+i'"
+        /></swiper-slide>
       </swiper>
     </div>
   </div>
