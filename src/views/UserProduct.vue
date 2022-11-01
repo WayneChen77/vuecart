@@ -7,28 +7,28 @@
     <div class="row">
       <div class="col row">
         <div class="titleimg" style="width: 16rem">
-          <img :src="filmproduct.imageUrl" :alt="filmproduct.engtitle" :title="filmproduct.title" />
+          <img :src="productdata.imageUrl" :alt="productdata.engtitle" :title="productdata.title" />
         </div>
 
         <div class="col">
-          <span class="badge badge-pill badge-primary bg-primary m-2">{{ filmproduct.grand }}</span>
+          <span class="badge badge-pill badge-primary bg-primary m-2">{{ productdata.grand }}</span>
           <span class="badge badge-pill badge-primary bg-primary m-2">特殊標籤</span>
 
-          <h3>片名:{{ filmproduct.title }}</h3>
-          <p>英文:{{ filmproduct.engtitle }}</p>
-          <p>類型:{{ filmproduct.category }}</p>
-          <p>片長:{{ filmproduct.flength }}分鍾</p>
+          <h3>片名:{{ productdata.title }}</h3>
+          <p>英文:{{ productdata.engtitle }}</p>
+          <p>類型:{{ productdata.category }}</p>
+          <p>片長:{{ productdata.flength }}分鍾</p>
 
-          <p>上映日期:{{ filmproduct.day }}</p>
-          <p>導演:{{ filmproduct.director }}</p>
+          <p>上映日期:{{ productdata.day }}</p>
+          <p>導演:{{ productdata.director }}</p>
           <p>
-            演員: <span v-for="i in filmproduct.actors" :key="'actor' + i">{{ i }},</span>
+            演員: <span v-for="(i, key) in productdata.actors" :key="key">{{ i }},</span>
           </p>
         </div>
       </div>
       <div class="col-2">
         <p>劇情簡介:</p>
-        <p>{{ filmproduct.description }}</p>
+        <p>{{ productdata.description }}</p>
       </div>
       <div class="col">
         <p>請選擇日期及廳別場次:</p>
@@ -36,7 +36,6 @@
           <ol class="breadcrumb">
             <li class="p-2" v-for="(i, key) in futuerday" :key="key">
               <button
-                @click="datastore(i)"
                 type="button"
                 class="rounded-circle btn btn-outline-danger"
                 :class="{ active: selectday === future(i - 1).today }"
@@ -49,20 +48,17 @@
             </li>
           </ol>
         </nav>
-        <!-- computed問題 改用函是處理 -->
-        <!-- <div v-for="(i, index, Key) in datastore" :key="Key"> -->
 
-        <div v-for="(i, index, Key) in productdata" :key="Key" class="theraterdata">
-          <p><i class="bi bi-camera-reels"></i>{{ i.detail.theater }}</p>
+        <div v-for="(i, index, Key) in datastore" :key="Key">
+          <p><i class="bi bi-camera-reels"></i>{{ i.theater }}</p>
 
           <button
             type="button"
             class="btn btn-outline-secondary m-1"
-            v-for="(a, index, key) in i.detail.time"
             :key="key"
-            @click="buyticket(a.while, index)"
+            @click="buyticket(i)"
           >
-            <span>{{ a.while }}</span>
+            <span>{{ i.time }}</span>
           </button>
         </div>
       </div>
@@ -79,8 +75,8 @@
       :pagination="{ clickable: true }"
       :scrollbar="{ draggable: true }"
     >
-      <swiper-slide v-for="(i, key) in filmproduct.images" :key="key"
-        ><img :src="i" :id="'圖片+i'" class="d-block w-100" :alt="'圖片+i'"
+      <swiper-slide v-for="(i, key) in productdata.images" :key="key"
+        ><img :src="i" class="d-block w-100" :alt="`${i}.pic`"
       /></swiper-slide>
     </swiper>
     <div class=""></div>
@@ -97,11 +93,12 @@ export default {
   data() {
     return {
       phonerwd: false,
-      filmproduct: {},
+      filmproducts: [],
       productdata: {},
       isLoading: false,
       modules: [Navigation, Pagination, Scrollbar, A11y],
       selectday: this.future().today,
+
       // 顯示未來幾比日期
       futuerday: 5,
     };
@@ -111,15 +108,19 @@ export default {
     SwiperSlide,
   },
   methods: {
-    getfilmproduct() {
+    getfilmproducts() {
       this.isLoading = true;
       // 取得path來使用
       const { id } = this.$route.params;
-      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/product/${id}`;
+      // const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/product/${id}`;
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/products/all`;
       this.$http
         .get(Api)
         .then((res) => {
-          this.filmproduct = res.data.product;
+          const data = res.data.products;
+          this.filmproducts = data.filter((i) => `${i.title}${i.engtitle}` === id);
+          const a = this.filmproducts[0];
+          this.productdata = a;
 
           this.isLoading = false;
         })
@@ -127,24 +128,23 @@ export default {
           console.log(e);
         });
     },
-    buyticket(i, index) {
+    buyticket(i) {
+      console.log(i);
       const cart = {
-        day: this.productdata[index].day,
-        filmWhile: i,
-        product_id: this.filmproduct.id,
+        product_id: i.id,
         qty: 1,
       };
-      console.log(cart);
-      // const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
-      // this.$http
-      //   .post(Api, { data: cart })
-      //   .then((res) => {
-      //     console.log(res);
-      //   })
-      //   .catch((e) => {
-      //     console.loc(e);
-      //   });
-      this.$router.push('/addticket');
+
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
+      this.$http
+        .post(Api, { data: cart })
+        .then((res) => {
+          console.log(res);
+          this.$router.push('/addticket');
+        })
+        .catch((e) => {
+          console.loc(e);
+        });
     },
 
     // 取的未來時間並轉換為資料傳到畫面上
@@ -166,30 +166,26 @@ export default {
       const today = `${yearNow}-${monthNow}-${dateNow}`;
       return { yearNow, monthNow, dayNow, dateNow, today };
     },
-    datastore(i) {
-      this.selectday = this.future(i - 1).today;
-      if (this.filmproduct !== {}) {
-        const a = this.filmproduct.test.filter((item) => item.day.match('2022-10-19'));
-        console.log(a[0].detail.time[1].while);
-        this.productdata = a;
-        // return a;
-      }
-      // return '';
+    // datastore(i) {
+    //   this.selectday = this.future(i - 1).today;
+    //   if (this.filmproducts !== {}) {
+    //     const a = this.filmproducts.filter((item) => item.day.match('2022-10-19'));
+
+    //     this.productdata = a;
+    //     console.log(a);
+    //   }
+    //   // return '';
+    // },
+  },
+  computed: {
+    datastore() {
+      return this.filmproducts.filter((item) => item.day.match('2022-10-19'));
+
+      // return this.filmproducts.filter((i) => i.Name.match(this.search));
     },
   },
-  //   computed: {
-  //     //  日期過濾資料 會報錯 未定義資料 懷疑是this.filmproduct.test;定義問題 先用函是方法執行
-  //     datastore() {
-  //       if (this.filmproduct !== {}) {
-  //         const a = this.filmproduct.test;
-  //         return a.filter((i) => i.day.match('2022-10-19'));
-  //       }
-  //       return '';
-  //     // return this.filmproducts.filter((i) => i.Name.match(this.search));
-  //   },
-  // },
   created() {
-    this.getfilmproduct();
+    this.getfilmproducts();
   },
 };
 </script>

@@ -2,38 +2,12 @@
   <!-- 全域原件 -->
   <LoadingView :active="isLoading"></LoadingView>
 
-  <div class="container">
-    <nav aria-label="breadcrumb " class="row">
-      <ol class="breadcrumb col-10">
-        <li class="breadcrumb-item">
-          <a href="#" @click.prevent="isShowing = null" @Keyup.enter.prevent="isShowing = null"
-            >全部</a
-          >
-        </li>
-        <li class="breadcrumb-item">
-          <a href="#" @click.prevent="isShowing = 1" @Keyup.enter.prevent="isShowing = 1">熱映中</a>
-        </li>
-        <li class="breadcrumb-item">
-          <a href="#" @click.prevent="isShowing = 0" @Keyup.enter.prevent="isShowing = 0"
-            >即將上映</a
-          >
-        </li>
-        <li class="breadcrumb-item">
-          <label for="searchDay" class="form-label"
-            >Day:<input id="searchDay" type="date" v-model="searchDay"
-          /></label>
-        </li>
-        <li class="breadcrumb-item ">
-          <label for="searchTitle" class="form-label"
-            >Title:<input id="searchTitle" type="text" v-model="searchTitle"
-          /></label>
-        </li>
-      </ol>
-      <button class="btn btn-titleblue col-2" @click="openModal(true)">新增映演</button>
-    </nav>
+  <div class="text-end">
+    this 控制台
+    <button class="btn btn-titleblue" @click="openModal(true)">新增映演</button>
   </div>
-
-  <table class="table mt-4 container">
+  {{ filmproducts[0] }}
+  <table class="table mt-4">
     <thead>
       <tr>
         <th width="120">分類</th>
@@ -50,16 +24,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="i in datastore" :key="i.id">
+      <tr v-for="i in filmproducts" :key="i.id">
         <td>{{ i.category }}</td>
         <td>{{ i.title }}</td>
         <td>{{ i.theater }}</td>
         <td>{{ i.day }}</td>
         <td>{{ i.grand }}</td>
-        <td>{{ i.unit }}- i.售出</td>
-        <td class="text-right">{{ $filters.currency(i.origin_price) }}這個是原價要用來做別的</td>
-        <td class="text-right">{{ $filters.currency(i.price) }}以後是使用的價格</td>
-        <td class="text-right">{{ $filters.currency(i.price) * 0.4 }}以改成使用價格換算</td>
+        <td>{{ i.unit - i.售出 }}</td>
+        <td class="text-right">{{ $filters.currency(i.origin_price) }}</td>
+        <td class="text-right">{{ $filters.currency(i.price) }}</td>
+        <td class="text-right">{{ i.origin_price * 0.4 }}</td>
         <td>
           <span class="text-success" v-if="i.is_showing"
             >showwing{{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}</span
@@ -102,17 +76,11 @@ export default {
       filmproducts: [],
       // 頁碼資料 傳往下層處理
       pagination: [],
-
-      // 岱刪除
       testuse: {},
       // 要傳往modal處理的資料
       filmproduct: {},
       isNew: false,
       isLoading: false,
-      // 搜尋後台資料
-      searchTitle: '',
-      searchDay: '',
-      isShowing: null,
     };
   },
   components: { FilmProductModal, DeleteModal, FilmPagination },
@@ -160,7 +128,8 @@ export default {
           console.log(e);
         });
     },
-
+    // /api/:api_path/admin/products
+    // /api/:api_path/admin/product
     updateProduct(item) {
       // 開啟讀取效果
       this.isLoading = true;
@@ -206,37 +175,12 @@ export default {
         .then((res) => {
           this.filmproducts = res.data.products;
           this.pagination = res.data.pagination;
-
+          console.log(res.data.products[0].test);
           this.isLoading = false;
         })
         .catch((e) => {
           console.log(e);
         });
-    },
-  },
-  computed: {
-    //  搜尋過濾
-    /* eslint-disable */
-    datastore() {
-      if (this.isShowing === 1) {
-        console.log(this.isShowing);
-        return this.filmproducts.filter(
-          (i) =>
-            i.is_showing === this.isShowing &&
-            i.title.match(this.searchTitle) &&
-            i.day.match(this.searchDay)
-        );
-      }
-      if (this.isShowing === 0) {
-        console.log(this.isShowing);
-        return this.filmproducts.filter(
-          (i) =>
-            i.is_showing === this.isShowing &&
-            i.title.match(this.searchTitle) &&
-            i.day.match(this.searchDay)
-        );
-      }
-      return this.filmproducts;
     },
   },
   //   從最父層取得bus使用 用來傳遞原件資料

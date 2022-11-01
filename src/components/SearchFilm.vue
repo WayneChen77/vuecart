@@ -18,9 +18,10 @@
                   class="col form-control validate[required]"
                   v-model="catchItem"
                 >
+                  <!-- 選的電影 是其中一個title 有其他同名時間 所以時間要另外再filter -->
                   <option selected value="" disabled>請選擇影片</option>
-                  <option :value="i" v-for="(i, index, key) in searchproducts" :key="key">
-                    {{ i.title }}
+                  <option :value="item" v-for="(item, index, key) in dataList" :key="key">
+                    {{ item.title }}
                   </option>
                 </select>
               </li>
@@ -33,11 +34,10 @@
                   aria-labelledby="lbl-main-menu-mob"
                   class="form-control col validate[required]"
                   v-model="catchDay"
-                  @change="setdetail(catchDay.detail)"
                 >
                   <option selected value="" disabled>請選擇日期</option>
-                  <option value="">請選擇日期</option>
-                  <option :value="i" v-for="(i, index, key) in catchItem.test" :key="key">
+
+                  <option :value="i" v-for="(i, index, key) in dataDay" :key="key">
                     {{ i.day }}
                   </option>
                 </select>
@@ -53,7 +53,7 @@
                   v-model="catchTime"
                 >
                   <option selected value="" disabled>請選擇時間</option>
-                  <option :value="i" v-for="i in catchTimes" :key="i">{{ i.while }}</option>
+                  <option :value="i" v-for="i in catchDay" :key="i">{{ i.time }}</option>
                 </select>
               </li>
             </ul>
@@ -80,21 +80,24 @@ export default {
   },
   methods: {
     buyticket() {
-      const cart = {
-        day: this.catchDay.day,
-        filmWhile: this.catchTime.while,
-        product_id: this.catchItem.id,
-        qty: 1,
-      };
-      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
-      this.$http
-        .post(Api, { data: cart })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((e) => {
-          console.loc(e);
-        });
+      //   const cart = {
+      //     day: this.catchDay.day,
+      //     filmWhile: this.catchTime.while,
+      //     product_id: this.catchItem.id,
+      //     qty: 1,
+      //   };
+      //   const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
+      //   this.$http
+      //     .post(Api, { data: cart })
+      //     .then((res) => {
+      //       console.log(res);
+      //     })
+      //     .catch((e) => {
+      //       console.loc(e);
+      //     });
+
+      console.log(this.searchdatalist);
+      console.log(this.searchfilmproducts);
     },
     setdetail(i) {
       console.log(this.catchDay);
@@ -111,9 +114,15 @@ export default {
     },
   },
   //   上方函是資料 會有bug 改變選向時無法自動清空跳回請選擇資料 要思考如何修改
-  //   computed:{
-  //   },
-  props: ['searchproducts'],
+  computed: {
+    dataList() {
+      return this.searchdatalist.filter((item) => item.is_showing !== 0);
+    },
+    dataDay() {
+      return this.searchfilmproducts.filter((item) => item.title === this.catchItem.title);
+    },
+  },
+  props: ['searchdatalist', 'searchfilmproducts'],
 };
 </script>
 
