@@ -5,26 +5,17 @@
         <a href="#" @click.prevent="btncontrol = !btncontrol" :class="{ linkWord: btncontrol }"
           >快速訂票</a
         >
-        <!-- {{ catchItem }} -->
-        {{ catchTime }}
-        5211{{ catchItem.id }}
-        {{ catchDay.day }}
-        <br />
 
-        {{ catchDay }}
-        <br />
-        <br />
-        <!-- {{ catchDay.detail.time.while }} -->
         <section id="searchForm1" class="searchSet" :class="{ searchForm1: btncontrol }">
           <form class="bookBox">
             <ul>
-              <li>
-                <span class="icon-video-1"></span>
+              <li class="row">
+                <i class="col-1 bi bi-camera-reels-fill"></i>
                 <select
                   aria-labelledby="lbl-main-menu-mob"
                   name="movie"
                   data-prompt-position="topLeft"
-                  class="form-control validate[required]"
+                  class="col form-control validate[required]"
                   v-model="catchItem"
                 >
                   <option selected value="" disabled>請選擇影片</option>
@@ -34,13 +25,13 @@
                 </select>
               </li>
 
-              <li>
-                <span class="icon-calendar"></span>
+              <li class="row">
+                <i class="col-1 bi bi-calendar2-plus"></i>
                 <select
                   name="date"
                   data-prompt-position="topLeft"
                   aria-labelledby="lbl-main-menu-mob"
-                  class="form-control validate[required]"
+                  class="form-control col validate[required]"
                   v-model="catchDay"
                   @change="setdetail(catchDay.detail)"
                 >
@@ -52,13 +43,13 @@
                 </select>
               </li>
 
-              <li>
-                <span class="icon-schedule"></span>
+              <li class="row">
+                <i class="bi bi-clock col-1"></i>
                 <select
                   name="session"
                   data-prompt-position="topLeft"
                   aria-labelledby="lbl-main-menu-mob"
-                  class="form-control validate[required]"
+                  class="form-control col validate[required]"
                   v-model="catchTime"
                 >
                   <option selected value="" disabled>請選擇時間</option>
@@ -127,6 +118,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.bi.col-1 {
+  transform: translateX(-100%);
+  font-size: 1.5rem;
+}
 .searchBox {
   position: fixed;
   z-index: 50;
@@ -135,6 +130,9 @@ export default {
 }
 .searchBox ul.searchItem {
   position: relative;
+  li {
+    list-style: none;
+  }
 }
 .searchBox ul.searchItem li a {
   &.linkWord {

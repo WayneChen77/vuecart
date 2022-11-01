@@ -24,7 +24,7 @@
               <router-link class="nav-link" to="/FilmAboutView">電影介紹</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/#">販賣部</router-link>
+              <router-link class="nav-link" to="/Candy">販賣部</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/login">會員登入</router-link>

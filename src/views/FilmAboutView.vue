@@ -23,18 +23,24 @@
         <li class="breadcrumb-item active" aria-current="page">Data</li>
       </ol>
     </nav>
-    <h2>{{ isShowwing == null ? 'All' : isShowwing == 1 ? '上映中' : '即將上映' }}</h2>
+    <h2 class="text-primary">
+      {{ isShowwing == null ? 'All' : isShowwing == 1 ? '熱映中' : '即將上映' }}
+    </h2>
 
-    <button @click="cc">111</button>
-    <router-view />
+    <!-- <router-view /> -->
     <div class="row justify-content-md-center flex-wrap">
-      <div class="card m-4 flex-wrap" style="width: 16rem" v-for="i in datastore" :key="i.id">
+      <div class="card m-4 flex-wrap" v-for="i in datastore" :key="i.id">
         <div class="titleimg position-relative">
           <div class="triangle"><div class="triangletxt">文字</div></div>
 
-          <a href="#" @click.prevent="userproduct(i.id)"
-            ><img :src="i.imageUrl" :alt="i.engtitle"
-          /></a>
+          <img :src="i.imageUrl" :alt="i.engtitle" />
+          <div class="cardhover">
+            <p class="hovertxt">
+              <a href="#" @click.prevent="userproduct(i.id)"
+                ><span>.</span> <i class="bi bi-hand-index text-white border border-3"></i
+              ></a>
+            </p>
+          </div>
         </div>
         <span class="badge badge-pill badge-primary bg-primary w-25 grand">{{ i.grand }}</span>
         <div class="card-body">
@@ -44,7 +50,7 @@
             <a href="#" @click.prevent="userproduct(i.id)">{{ i.title }}</a>
           </h5>
           <h5 class="card-title">{{ i.engtitle }}</h5>
-          <p>日期{{ i.day }}</p>
+          <p>日期:{{ i.day }}</p>
           <!-- <p class="card-text">
             {{ i.description }}
           </p> -->
@@ -118,24 +124,7 @@ export default {
   .grand {
     transform: translate(10%, -125%);
   }
-  img {
-    width: 100%;
-    height: 100%;
-  }
-  .card {
-    border: none;
-    h5 a {
-      text-decoration: none;
-    }
-  }
-  .card:hover {
-    background: rgb(189, 187, 187);
-  }
-  .titleimg {
-    height: 20rem;
-    object-fit: cover;
-    overflow: hidden;
-  }
+
   //  三角形
   .triangle {
     top: -60px;
@@ -155,6 +144,67 @@ export default {
     transform: translateX(-50%);
     color: white;
     font-weight: bold;
+  }
+  //動畫
+
+  // 卡片數據
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  .card {
+    width: 16rem;
+    border: none;
+    h5 a {
+      text-decoration: none;
+    }
+  }
+
+  .titleimg {
+    height: 20rem;
+    object-fit: cover;
+    overflow: hidden;
+  }
+  // 卡片遮罩
+
+  .card:hover {
+    background: rgb(189, 187, 187);
+    .cardhover {
+      opacity: 0.6;
+    }
+  }
+  .cardhover {
+    display: flex;
+    min-width: 9rem;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    top: 0;
+    opacity: 0;
+    position: absolute;
+    transition: all 0.5s;
+
+    .hovertxt {
+      margin: auto;
+
+      i {
+        padding: 1rem;
+        border-radius: 50%;
+      }
+      a span {
+        height: 1px;
+        width: 1px;
+        position: absolute;
+        overflow: hidden;
+        top: -10px;
+      }
+    }
+  }
+  @media (max-width: 480px) {
+    .card {
+      width: 18rem;
+      background: rgb(189, 187, 187);
+    }
   }
 }
 </style>

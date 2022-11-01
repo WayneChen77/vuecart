@@ -5,6 +5,7 @@ import VueAxios from 'vue-axios';
 import Loading from 'vue3-loading-overlay';
 
 import 'vue3-loading-overlay/dist/vue3-loading-overlay.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // 套用千分號
 import { currency, date } from './methods/filter';

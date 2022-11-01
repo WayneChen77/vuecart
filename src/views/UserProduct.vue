@@ -53,7 +53,7 @@
         <!-- <div v-for="(i, index, Key) in datastore" :key="Key"> -->
 
         <div v-for="(i, index, Key) in productdata" :key="Key" class="theraterdata">
-          <p>{{ i.detail.theater }}</p>
+          <p><i class="bi bi-camera-reels"></i>{{ i.detail.theater }}</p>
 
           <button
             type="button"

@@ -38,6 +38,12 @@ const routes = [
     component: () => import('../views/AddTicket.vue'),
   },
   {
+    path: '/candy',
+    name: 'CandyView',
+
+    component: () => import('../views/CandyView.vue'),
+  },
+  {
     path: '/login',
     name: 'login',
 
