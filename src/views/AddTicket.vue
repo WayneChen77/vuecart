@@ -2,10 +2,11 @@
   <button @click="getusercarts">測試按鍵</button>
   <div class="container addticket">
     <div class="row">
-      <!-- 使用v-for不會有問題 -->
-      <!-- 但不管資料形式是arry或OBJ -->
+      <!-- 如果使用v-for不會有問題 -->
+      <!-- 不管資料形式是arry或OBJ -->
       <!-- 在取得資料時整個資料都可以輸出 -->
-      <!-- 但取得資料中子物件時 瀏覽器都會報錯underfind -->
+
+      <!-- 但如果不使用v-for直接取得資料中子物件時 瀏覽器都會報錯underfined -->
       <!-- 跳過報錯後卻會取得資料內容 -->
 
       <!-- {{ dataList[0] }}取得到值
@@ -22,13 +23,13 @@
         <p>{{ carts[0].final_total }}</p>
       </div>
       <!-- 正常 -->
-
-      <!-- 為什麼需要加v-if才能抓到資料 是否代表 在mounted掛在html時 某個時後carts[0]資料會時underfind-->
+      <!-- 為什麼需要加v-if才能抓到資料 是否代表 在mounted掛在html時 某個時間carts[0]資料會是underfined-->
       <!-- 後來査到資料說 -->
       <!-- beforeMount：已經載入原始HTML至Virtual DOM，但內容尚未透過Vue進行渲染。
 mounted：已經透過Vue進行渲染HTML，並且取代原本的元素內容。 -->
-      <!-- 所以html其實在mounted前就已經掛載咯 -->
-      <!-- 但這似乎無法解是讀取不到資料的疑問 資料不是在created就會取得了嗎 -->
+      <!-- 所以html其實在mounted前就已經掛載咯 這個時候會是導致underfined的原因嗎    -->
+      <!-- Vue進行渲染HTML，並且取代原本的元素內容 所已原本內容{{ carts[0].final_total }}這時後會被讀取出data資料 -->
+      <!-- 但這似乎無法解釋讀取不到資料的疑問 資料不是在created就會取得了嗎 -->
 
       <div class="col-12 col-sm-8" v-for="(item, index, key) in dataList" :key="key">
         left
