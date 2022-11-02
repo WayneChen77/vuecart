@@ -2,25 +2,53 @@
   <button @click="getusercarts">測試按鍵</button>
   <div class="container addticket">
     <div class="row">
-      <div class="col-12 col-sm-8">
+      <!-- 使用v-for不會有問題 -->
+      <!-- 但不管資料形式是arry或OBJ -->
+      <!-- 在取得資料時整個資料都可以輸出 -->
+      <!-- 但取得資料中子物件時 瀏覽器都會報錯underfind -->
+      <!-- 跳過報錯後卻會取得資料內容 -->
+
+      <!-- {{ dataList[0] }}取得到值
+        {{ dataLista }}取得到值 -->
+      <!-- {{ dataLista.id }} 取不到值
+         {{ dataList[0].id }}取不到值 -->
+      <!-- 理解為資料取得是在beforemounted  html原件掛載是在mounted階段-->
+      <!-- 那是什麼原因讓資料無法讀取 -->
+      <!-- 報錯 -->
+      <!-- <p>{{ carts[0].final_total }}</p> -->
+      <!-- 報錯 -->
+      <!-- 正常 -->
+      <div v-if="carts[0]">
+        <p>{{ carts[0].final_total }}</p>
+      </div>
+      <!-- 正常 -->
+
+      <!-- 為什麼需要加v-if才能抓到資料 是否代表 在mounted掛在html時 某個時後carts[0]資料會時underfind-->
+      <!-- 後來査到資料說 -->
+      <!-- beforeMount：已經載入原始HTML至Virtual DOM，但內容尚未透過Vue進行渲染。
+mounted：已經透過Vue進行渲染HTML，並且取代原本的元素內容。 -->
+      <!-- 所以html其實在mounted前就已經掛載咯 -->
+      <!-- 但這似乎無法解是讀取不到資料的疑問 資料不是在created就會取得了嗎 -->
+
+      <div class="col-12 col-sm-8" v-for="(item, index, key) in dataList" :key="key">
         left
         <div class="box row">
           <div class="addgrand col-sm-2 col-4 my-3">
             <div class="card text-white">
               <h5 class="card-header bg-success">0+</h5>
               <div class="card-body text-gray">
-                <p class="card-text">普片級</p>
+                <p class="card-text">{{ item.product.grand }}</p>
               </div>
             </div>
           </div>
           <div class="title col-sm-7 col-8 my-3">
-            <h1>(數位)變形金剛</h1>
-            <p>英文名字</p>
+            <h1>{{ item.product.title }}</h1>
+            <p>{{ item.product.engtitle }}</p>
           </div>
           <div class="des col-sm-3 col-12 my-3">
-            <p>標籤(2022/10/10)</p>
-            <p><i class="bi bi-clock"></i>時間16:00</p>
-            <p><i class="bi bi-camera-reels"></i>影廳:C15</p>
+            <p>標籤{{ item.product.day }}</p>
+            <p><i class="bi bi-clock"></i>時間:{{ item.product.time }}</p>
+            <p><i class="bi bi-camera-reels"></i>影廳:{{ item.product.theater }}</p>
           </div>
         </div>
         <div class="bg-gray">
@@ -99,14 +127,21 @@
                     <tr>
                       <th scope="row">全票</th>
                       <td>300</td>
+                      {{
+                        this.aldult
+                      }}
                       <td>
                         <select
                           aria-labelledby="lbl-main-menu-mob"
                           data-prompt-position="topLeft"
                           class="form-control w-25"
+                          v-for="(item, index, key) in dataList"
+                          :key="key"
+                          v-model="item.aldult"
+                          :value="item.aldult"
                         >
-                          <option selected value="" disabled>0</option>
-                          <option>123</option>
+                          <option value="">{{ item.aldult }}111</option>
+                          <option v-for="(i, index, key) in number" :key="key">{{ i }}</option>
                         </select>
                       </td>
                       <td>總價</td>
@@ -119,9 +154,10 @@
                           aria-labelledby="lbl-main-menu-mob"
                           data-prompt-position="topLeft"
                           class="form-control w-25"
+                          v-model="student"
                         >
-                          <option selected value="" disabled>0</option>
-                          <option>123</option>
+                          <option selected value="">0</option>
+                          <option v-for="(i, index, key) in number" :key="key">{{ i }}</option>
                         </select>
                       </td>
                       <td>總數</td>
@@ -134,9 +170,10 @@
                           aria-labelledby="lbl-main-menu-mob"
                           data-prompt-position="topLeft"
                           class="form-control w-25"
+                          v-model="half"
                         >
-                          <option selected value="" disabled>0</option>
-                          <option>123</option>
+                          <option value="">0</option>
+                          <option v-for="(i, index, key) in number" :key="key">{{ i }}</option>
                         </select>
                       </td>
                       <td>總數</td>
@@ -238,11 +275,24 @@
       <div class="col-12 col-sm-4">
         right
 
-        <div class="card text-white my-5">
-          <h5 class="card-header bg-titleblue">購票資訊</h5>
+        <div class="card text-white my-5" v-for="(item, index, key) in dataList" :key="key">
+          <h5 class="card-header bg-titleblue">:{{ item.product.title }}</h5>
           <div class="card-body text-gray">
-            <p class="card-text">使用動態資料</p>
-            <a href="#" class="btn btn-primary text-end">下一頁</a>
+            <p class="card-text">
+              影廳:{{ item.product.theater }} ,<span>時間:{{ item.product.time }}</span>
+            </p>
+            <p class="card-text">
+              <span>seat:{{ item.qty }}</span>
+            </p>
+            <p class="position-relative">
+              <span>金額$:{{ item.total }}</span
+              ><a
+                href="#"
+                class="btn btn-primary position-absolute end-0"
+                @click.prevent="getusercarts"
+                >選擇座位
+              </a>
+            </p>
           </div>
         </div>
       </div>
@@ -254,20 +304,37 @@
 export default {
   data() {
     return {
-      carts: {},
+      carts: [],
+      number: 4,
+      aldult: 0,
+      student: 0,
+      half: 0,
+      datalista: {},
     };
   },
   methods: {
     getusercarts() {
+      // 取得購物車群資料
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
       this.$http
         .get(Api)
         .then((res) => {
-          console.log(res.data.data);
+          this.carts = res.data.data.carts;
+          console.log(res.data.data.carts);
         })
         .catch((e) => {
           console.loc(e);
         });
+    },
+  },
+  computed: {
+    // 利用router 篩選出選擇的電影品項ID 利用此ID取得購物車ID與資料
+    dataList() {
+      return this.carts.filter((item) => item.product_id === this.$route.params.id);
+    },
+    dataLista() {
+      const a = this.carts.filter((item) => item.product_id === this.$route.params.id);
+      return a[0];
     },
   },
 

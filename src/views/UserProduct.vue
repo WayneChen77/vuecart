@@ -129,18 +129,21 @@ export default {
         });
     },
     buyticket(i) {
-      console.log(i);
       const cart = {
         product_id: i.id,
         qty: 1,
+        aldult: 1,
+        student: 0,
+        half: 0,
       };
 
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
       this.$http
         .post(Api, { data: cart })
         .then((res) => {
-          console.log(res);
-          this.$router.push('/addticket');
+          console.log(res.data.data.product_id);
+          //   傳入動態電影ID 以利下一頁取得產品ID
+          this.$router.push(`/addticket/${cart.product_id}`);
         })
         .catch((e) => {
           console.loc(e);

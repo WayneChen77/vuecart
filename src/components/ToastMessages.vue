@@ -11,7 +11,7 @@ export default {
   components: { ToastView },
   data() {
     return {
-      messages: [{ title: 'haha' }],
+      messages: [],
     };
   },
   inject: ['emitter'],

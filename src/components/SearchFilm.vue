@@ -53,7 +53,7 @@
                   v-model="catchTime"
                 >
                   <option selected value="" disabled>請選擇時間</option>
-                  <option :value="i" v-for="i in catchDay" :key="i">{{ i.time }}</option>
+                  <option :value="i" v-for="i in dataTime" :key="i">{{ i.time }}</option>
                 </select>
               </li>
             </ul>
@@ -74,54 +74,65 @@ export default {
       catchItem: '',
       catchDay: '',
       catchTime: '',
-      catchTimes: '',
+
       btncontrol: false,
     };
   },
   methods: {
     buyticket() {
-      //   const cart = {
-      //     day: this.catchDay.day,
-      //     filmWhile: this.catchTime.while,
-      //     product_id: this.catchItem.id,
-      //     qty: 1,
-      //   };
-      //   const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
-      //   this.$http
-      //     .post(Api, { data: cart })
-      //     .then((res) => {
-      //       console.log(res);
-      //     })
-      //     .catch((e) => {
-      //       console.loc(e);
-      //     });
+      const cart = {
+        product_id: this.catchTime.id,
 
-      console.log(this.searchdatalist);
-      console.log(this.searchfilmproducts);
-    },
-    setdetail(i) {
-      console.log(this.catchDay);
-      if (this.catchItem) {
-        if (this.catchDay) {
-          this.catchTimes = i.time;
-          console.log(this.catchTime);
-        } else {
-          this.catchTimes = [];
-        }
-      } else {
-        this.catchTimes = [];
-      }
+        qty: 1,
+        aldult: 1,
+        student: 0,
+        half: 0,
+      };
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
+      this.$http
+        .post(Api, { data: cart })
+        .then((res) => {
+          console.log(res);
+          //   傳入動態電影ID 以利下一頁取得產品ID
+
+          this.$router.push(`/addticket/${cart.product_id}`);
+        })
+        .catch((e) => {
+          console.loc(e);
+        });
     },
   },
-  //   上方函是資料 會有bug 改變選向時無法自動清空跳回請選擇資料 要思考如何修改
+
   computed: {
     dataList() {
       return this.searchdatalist.filter((item) => item.is_showing !== 0);
     },
     dataDay() {
-      return this.searchfilmproducts.filter((item) => item.title === this.catchItem.title);
+      const a = this.searchfilmproducts.filter((item) => item.title === this.catchItem.title);
+      const result = new Set();
+      const repeat = new Set();
+      const b = [];
+      a.forEach((item) => {
+        if (result.has(item.day)) {
+          repeat.add(item);
+        } else {
+          result.add(item.day);
+          b.push(item);
+        }
+      });
+
+      return b;
+    },
+    dataTime() {
+      const b = this.searchfilmproducts.filter((i) => i.title === this.catchItem.title);
+
+      return b.filter((i) => i.day === this.catchDay.day);
     },
   },
+  //   searchdatalist為上層下來以篩選title searchfilmproducts為全部資料
+  // 之後要設定排除comming問題 item.is_showing !== 0應可形 但其他要記得設定
+
+  //   目前以抓到日期 彈還沒排除重複期 解決這個 還有目前時間沒抓到
   props: ['searchdatalist', 'searchfilmproducts'],
 };
 </script>
