@@ -1,63 +1,37 @@
 <template>
+  <!-- 全域原件 -->
+  <LoadingView :active="isLoading"></LoadingView>
+
   <button @click="getusercarts">測試按鍵</button>
   <div class="container addticket">
     <div class="row">
-      <!-- 如果使用v-for不會有問題 -->
-      <!-- 不管資料形式是arry或OBJ -->
-      <!-- 在取得資料時整個資料都可以輸出 -->
-
-      <!-- 但如果不使用v-for直接取得資料中子物件時 瀏覽器都會報錯underfined -->
-      <!-- 跳過報錯後卻會取得資料內容 -->
-
-      <!-- {{ dataList[0] }}取得到值
-        {{ dataLista }}取得到值 -->
-      <!-- {{ dataLista.id }} 取不到值
-         {{ dataList[0].id }}取不到值 -->
-      <!-- 理解為資料取得是在beforemounted  html原件掛載是在mounted階段-->
-      <!-- 那是什麼原因讓資料無法讀取 -->
-      <!-- 報錯 -->
-      <!-- <p>{{ carts[0].final_total }}</p> -->
-      <!-- 報錯 -->
-      <!-- 正常 -->
-      <div v-if="carts[0]">
-        <p>{{ carts[0].final_total }}</p>
-      </div>
-      <!-- 正常 -->
-      <!-- 為什麼需要加v-if才能抓到資料 是否代表 在mounted掛在html時 某個時間carts[0]資料會是underfined-->
-      <!-- 後來査到資料說 -->
-      <!-- beforeMount：已經載入原始HTML至Virtual DOM，但內容尚未透過Vue進行渲染。
-mounted：已經透過Vue進行渲染HTML，並且取代原本的元素內容。 -->
-      <!-- 所以html其實在mounted前就已經掛載咯 這個時候會是導致underfined的原因嗎    -->
-      <!-- Vue進行渲染HTML，並且取代原本的元素內容 所已原本內容{{ carts[0].final_total }}這時後會被讀取出data資料 -->
-      <!-- 但這似乎無法解釋讀取不到資料的疑問 資料不是在created就會取得了嗎 -->
-
-      <div class="col-12 col-sm-8" v-for="(item, index, key) in dataList" :key="key">
+      <div class="col-12 col-sm-8" v-if="dataList">
         left
         <div class="box row">
           <div class="addgrand col-sm-2 col-4 my-3">
             <div class="card text-white">
               <h5 class="card-header bg-success">0+</h5>
               <div class="card-body text-gray">
-                <p class="card-text">{{ item.product.grand }}</p>
+                <p class="card-text">{{ dataList.product.grand }}</p>
               </div>
             </div>
           </div>
           <div class="title col-sm-7 col-8 my-3">
-            <h1>{{ item.product.title }}</h1>
-            <p>{{ item.product.engtitle }}</p>
+            <h1>{{ dataList.product.title }}</h1>
+            <p>{{ dataList.product.engtitle }}</p>
           </div>
           <div class="des col-sm-3 col-12 my-3">
-            <p>標籤{{ item.product.day }}</p>
-            <p><i class="bi bi-clock"></i>時間:{{ item.product.time }}</p>
-            <p><i class="bi bi-camera-reels"></i>影廳:{{ item.product.theater }}</p>
+            <p>標籤{{ dataList.product.day }}</p>
+            <p><i class="bi bi-clock"></i>時間:{{ dataList.product.time }}</p>
+            <p><i class="bi bi-camera-reels"></i>影廳:{{ dataList.product.theater }}</p>
           </div>
         </div>
         <div class="bg-gray">
           <div class="text-center text-white p-3 my-3">
             <h2>選擇電影票</h2>
             <p class="pt-3">
-              選擇您希望購買的電影票張數和類型.請注意系統將自動為您保留可訂的最佳座位,
-              每筆交易最多可購買10張電影票
+              選擇您希望購買的電影票張數和類型.請注意會員折扣以全票8折計算，系統將自動為您保留可訂的最佳座位,
+              愛心票' 請於取票窗口出示證件，單張證件限購2票。
             </p>
           </div>
         </div>
@@ -120,64 +94,73 @@ mounted：已經透過Vue進行渲染HTML，並且取代原本的元素內容。
                     <tr>
                       <th scope="col">票種</th>
                       <th scope="col">價格</th>
-                      <th scope="col">張數</th>
-                      <th scope="col">總價</th>
+                      <th scope="col" width="120">張數</th>
+                      <th scope="col">
+                        總價
+                        <div class="spinner-border spinner-border-sm" role="status" v-if="isload">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <th scope="row">全票</th>
-                      <td>300</td>
-                      {{
-                        this.aldult
-                      }}
+                      <td>{{ dataList.product.price }}</td>
+
+                      <!-- {{
+                        dataList.aldult
+                      }} -->
+                      <!-- :disabled="this.status.loadingItem === item.id" -->
                       <td>
                         <select
                           aria-labelledby="lbl-main-menu-mob"
                           data-prompt-position="topLeft"
-                          class="form-control w-25"
-                          v-for="(item, index, key) in dataList"
-                          :key="key"
-                          v-model="item.aldult"
-                          :value="item.aldult"
+                          class="form-control"
+                          v-model="aldult"
+                          @change="ticketType('aldult')"
+                          :disabled="isload"
                         >
-                          <option value="">{{ item.aldult }}111</option>
                           <option v-for="(i, index, key) in number" :key="key">{{ i }}</option>
                         </select>
                       </td>
-                      <td>總價</td>
+                      <td>${{ aldultPrices }}</td>
                     </tr>
                     <tr>
                       <th scope="row">學生票</th>
-                      <td>300-20</td>
+                      <td>{{ dataList.product.price - 20 }}</td>
                       <td>
                         <select
                           aria-labelledby="lbl-main-menu-mob"
                           data-prompt-position="topLeft"
-                          class="form-control w-25"
-                          v-model="student"
+                          class="form-control"
+                          v-model.number="student"
+                          @change="ticketType('student')"
+                          :disabled="isload"
                         >
                           <option selected value="">0</option>
                           <option v-for="(i, index, key) in number" :key="key">{{ i }}</option>
                         </select>
                       </td>
-                      <td>總數</td>
+                      <td>${{ studentPrices }}</td>
                     </tr>
                     <tr>
                       <th scope="row">愛心票</th>
-                      <td>300/2</td>
+                      <td>{{ dataList.product.price * 0.5 }}</td>
                       <td>
                         <select
                           aria-labelledby="lbl-main-menu-mob"
                           data-prompt-position="topLeft"
-                          class="form-control w-25"
+                          class="form-control"
                           v-model="half"
+                          @change="ticketType('half')"
+                          :disabled="isload"
                         >
                           <option value="">0</option>
                           <option v-for="(i, index, key) in number" :key="key">{{ i }}</option>
                         </select>
                       </td>
-                      <td>總數</td>
+                      <td>${{ halfPrices }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -275,66 +258,178 @@ mounted：已經透過Vue進行渲染HTML，並且取代原本的元素內容。
       <!--  -->
       <div class="col-12 col-sm-4">
         right
-
-        <div class="card text-white my-5" v-for="(item, index, key) in dataList" :key="key">
-          <h5 class="card-header bg-titleblue">:{{ item.product.title }}</h5>
+        <div class="input-group mb-3 input-group-sm">
+          <label for="coupon"
+            ><input
+              type="text"
+              class="form-control"
+              v-model="coupon_code"
+              placeholder="請輸入會員ID"
+          /></label>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" @click="addCouponCode">
+              套用會員折扣
+            </button>
+          </div>
+        </div>
+        <div class="card text-white my-5" v-if="dataList">
+          <h5 class="card-header bg-titleblue">:{{ dataList.product.title }}</h5>
           <div class="card-body text-gray">
             <p class="card-text">
-              影廳:{{ item.product.theater }} ,<span>時間:{{ item.product.time }}</span>
+              影廳:{{ dataList.product.theater }} ,<span>時間:{{ dataList.product.time }}</span>
             </p>
+            <a
+              href="#"
+              class="btn btn-primary position-absolute end-0"
+              @click.prevent="removeCartItem"
+              >選擇其他電影
+            </a>
             <p class="card-text">
-              <span>seat:{{ item.qty }}</span>
+              <span>seat:{{ dataList.qty }}</span>
             </p>
             <p class="position-relative">
-              <span>金額$:{{ item.total }}</span
+              <span v-if="reduce !== 0 && dataList.final_total === dataList.total"
+                >金額$:{{ dataList.total - reduce }}</span
+              ><span v-else>金額$:{{ dataList.total }}</span
               ><a
                 href="#"
                 class="btn btn-primary position-absolute end-0"
-                @click.prevent="getusercarts"
+                @click.prevent="openModal"
                 >選擇座位
               </a>
             </p>
+
+            <p v-if="dataList.final_total !== dataList.total">
+              會員金額:{{ dataList.final_total }}
+            </p>
           </div>
+          removeCartItem
         </div>
       </div>
     </div>
   </div>
+  <!-- 區域原件 -->
+
+  <SeatModal ref="SeatModal" :dataa="dataList"></SeatModal>
 </template>
 
 <script>
+import SeatModal from '@/components/SeatModal.vue';
+
 export default {
   data() {
     return {
       carts: [],
+      // 總票數?
       number: 4,
       aldult: 0,
       student: 0,
       half: 0,
-      datalista: {},
+      reduce: 0,
+      aldultPrices: 0,
+      studentPrices: 0,
+      halfPrices: 0,
+      coupon_code: '',
+      isload: false,
+      isLoading: false,
     };
   },
+  components: { SeatModal },
   methods: {
+    // 移除票資料
+    removeCartItem() {
+      this.isload = this.dataList.id;
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${this.dataList.id}`;
+
+      this.$http.delete(Api).then((response) => {
+        console.log(response);
+        // this.$httpMessageState(response, '移除購物車品項');
+        this.$router.push('/FilmAboutView');
+      });
+    },
+
+    // 更新票種
+    updateCart(item) {
+      this.isload = true;
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${this.dataList.id}`;
+      //   this.isLoading = true;
+      //   this.status.loadingItem = item.id;
+      const cart = {
+        product_id: this.dataList.product_id,
+        qty: item,
+        aldult: this.aldult,
+        student: this.student,
+        half: this.student,
+      };
+      this.$http.put(Api, { data: cart }).then((res) => {
+        console.log(res);
+        // this.status.loadingItem = '';
+        this.isload = false;
+        this.getusercarts();
+      });
+    },
+
+    //  調整票整
+    ticketType(i) {
+      if (i === 'aldult') {
+        this.aldultPrices = Number(this.aldult) * this.dataList.product.price;
+      } else if (i === 'student') {
+        this.studentPrices = Number(this.student) * (this.dataList.product.price - 20);
+      } else {
+        this.halfPrices = Number(this.half) * this.dataList.product.price * 0.5;
+      }
+      const qtynumber = Number(this.aldult) + Number(this.student) + Number(this.half);
+      console.log(qtynumber);
+      // eslint-disable-next-line
+      this.reduce =
+        // eslint-disable-next-line
+        Number(this.student) * 20 + Number(this.half) * (this.dataList.product.price * 0.5);
+      this.updateCart(qtynumber);
+    },
+    addCouponCode() {
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/coupon`;
+      const coupon = {
+        code: this.coupon_code,
+      };
+      this.isLoading = true;
+      this.$http.post(Api, { data: coupon }).then((res) => {
+        // res.message 回覆吐司
+        // this.$httpMessageState(response, '加入優惠券');
+        console.log(res);
+        this.getusercarts();
+        this.isLoading = false;
+      });
+    },
     getusercarts() {
       // 取得購物車群資料
+      this.isLoading = true;
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
       this.$http
         .get(Api)
         .then((res) => {
           this.carts = res.data.data.carts;
-          console.log(res.data.data.carts);
+
+          this.isLoading = false;
         })
         .catch((e) => {
           console.loc(e);
         });
     },
+
+    // 開啟modal
+
+    openModal() {
+      const modal = this.$refs.SeatModal;
+
+      modal.showModal();
+    },
   },
   computed: {
     // 利用router 篩選出選擇的電影品項ID 利用此ID取得購物車ID與資料
+
     dataList() {
-      return this.carts.filter((item) => item.product_id === this.$route.params.id);
-    },
-    dataLista() {
       const a = this.carts.filter((item) => item.product_id === this.$route.params.id);
+      console.log(a[0]);
       return a[0];
     },
   },
@@ -361,6 +456,11 @@ export default {
   img {
     height: 73%;
     width: 100%;
+  }
+  .product:hover {
+    .cardhover {
+      opacity: 0.6;
+    }
   }
   .cardhover {
     display: flex;

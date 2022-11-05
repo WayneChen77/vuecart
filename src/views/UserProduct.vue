@@ -131,8 +131,8 @@ export default {
     buyticket(i) {
       const cart = {
         product_id: i.id,
-        qty: 1,
-        aldult: 1,
+        qty: 0,
+        aldult: 0,
         student: 0,
         half: 0,
       };

@@ -194,7 +194,7 @@ img {
   padding: 1rem;
   color: white;
   top: 30%;
-  bottom: 50%;
+
   left: 18%;
   width: 390px;
 

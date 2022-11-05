@@ -1,16 +1,5 @@
 <template>
-  <div class="candy container">
-    <transition-group appear>
-      <div class="block" v-if="isshow">123</div>
-      <div class="block" v-if="isshow">123</div>
-    </transition-group>
-    <button @click="isshow = !isshow">1223</button>
-  </div>
-  <div class="row">
-    <span v-for="i in 8" :key="i" class="col-2 m-4">{{ i }}</span>
-  </div>
   <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary" @click="showModal">Launch demo modal</button>
 
   <!-- Modal -->
   <div
@@ -58,7 +47,7 @@
               >
                 <path
                   d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a
-                  .5.5 0 0 1-.5-.5zM2 2h12s2 0 2 2v6s0 2-2 2H2s-2 0-2-2V4s0-2 2-2z"
+                    .5.5 0 0 1-.5-.5zM2 2h12s2 0 2 2v6s0 2-2 2H2s-2 0-2-2V4s0-2 2-2z"
                 />
               </svg>
               <!-- <i class="bi bi-tv-fill"></i> -->
@@ -91,7 +80,7 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="hideModal">
               取消
             </button>
-            <button type="button" class="btn btn-primary">確定</button>
+            <button type="button" class="btn btn-primary">確定 {{ dataa }}</button>
           </div>
         </div>
       </div>
@@ -103,6 +92,12 @@
 import modalmixiins from '@/mixins/modalmixins';
 
 export default {
+  props: {
+    dataa: { type: Object },
+    default() {
+      return {};
+    },
+  },
   data() {
     return {
       isshow: true,
@@ -118,10 +113,11 @@ export default {
   methods: {
     // 測試用新增座位
     bt2() {
-      for (let i = 0; i < 20; i += 1) {
-        const a = { i, state: 'none' };
-        this.seatitem = [...this.seatitem, a];
-      }
+      //   for (let i = 0; i < 20; i += 1) {
+      //     const a = { i, state: 'none' };
+      //     this.seatitem = [...this.seatitem, a];
+      //   }
+      console.log(this.dataa);
     },
     // 點擊座位函式
     selectSeat(i) {

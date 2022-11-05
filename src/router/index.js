@@ -51,7 +51,7 @@ const routes = [
   },
   {
     path: '/dashboard',
-    name: 'ashboard',
+    name: 'dashboard',
 
     component: () => import('../views/DashBoard.vue'),
     children: [
@@ -59,6 +59,16 @@ const routes = [
         path: 'filmproduct',
         name: 'filmproduct',
         component: () => import('../views/FilmProduct.vue'),
+      },
+      {
+        path: 'CouponView',
+        name: 'CouponView',
+        component: () => import('../views/CouponView.vue'),
+      },
+      {
+        path: 'EditCabdy',
+        name: 'EditCabdy',
+        component: () => import('../views/EditCandy.vue'),
       },
     ],
   },

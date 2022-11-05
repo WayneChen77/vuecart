@@ -83,8 +83,8 @@ export default {
       const cart = {
         product_id: this.catchTime.id,
 
-        qty: 1,
-        aldult: 1,
+        qty: 0,
+        aldult: 0,
         student: 0,
         half: 0,
       };
