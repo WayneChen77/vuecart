@@ -112,9 +112,9 @@
             </div>
             <div class="col-sm-8">
               <div class="row gx-2">
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-6">
                   <label for="title" class="form-label"
-                    >電影名稱<input
+                    >*電影名稱<input
                       id="title"
                       type="text"
                       class="form-control"
@@ -130,7 +130,7 @@
                       v-model="filmProduct.engtitle"
                   /></label>
                 </div>
-                <div class="mb-3 col-md-4">
+                <div class="mb-3 col-md-6">
                   <label for="title" class="form-label"
                     >電影分級<input
                       id="title"
@@ -148,22 +148,23 @@
                       v-model="filmProduct.version"
                   /></label>
                 </div>
-                <div class="mb-3 col-md-4">
-                  <label for="title" class="form-label"
+                <div class="mb-3 col-md-6">
+                  <label for="date" class="form-label"
                     >上映日期<input
-                      id="title"
+                      id="date"
                       type="date"
                       class="form-control"
-                      placeholder="請輸入名稱"
                       v-model="filmProduct.day"
                   /></label>
                   <label for="title" class="form-label"
                     >場次時間<input
                       id="title"
                       type="number"
+                      min="0"
                       class="form-control"
-                      placeholder="請輸入名稱"
+                      placeholder="EX: 23:00"
                       v-model="filmProduct.time"
+                      @change="seatEdit"
                   /></label>
                 </div>
               </div>
@@ -171,7 +172,7 @@
               <div class="row gx-2">
                 <div class="mb-3 col-md-6">
                   <label for="category" class="form-label"
-                    >分類<input
+                    >*分類<input
                       id="category"
                       type="text"
                       class="form-control"
@@ -182,7 +183,7 @@
                 <!-- 調整 -->
                 <div class="mb-3 col-md-6">
                   <label for="unit" class="form-label"
-                    >坐位數
+                    >*坐位數
                     <input
                       id="unit"
                       type="text"
@@ -196,7 +197,7 @@
               <div class="row gx-2">
                 <div class="mb-3 col-md-6">
                   <label for="origin_price" class="form-label"
-                    >全票(這個設定沒用處)<input
+                    >*原價(這個設定沒用處)<input
                       id="origin_price"
                       type="number"
                       class="form-control"
@@ -206,11 +207,11 @@
                 </div>
                 <div class="mb-3 col-md-6">
                   <label for="price" class="form-label"
-                    >學生票(要改成使用的價欠)<input
+                    >*全票<input
                       id="price"
                       type="number"
                       class="form-control"
-                      placeholder="請輸入學生票"
+                      placeholder="請輸入全票"
                       v-model="filmProduct.price"
                   /></label>
                   <label for="theater" class="form-label"
@@ -254,9 +255,43 @@
                       placeholder="請輸入分類"
                       v-model="filmProduct.director"
                   /></label>
+                  <div class="mb-3" v-if="filmProduct.actors">
+                    <div
+                      v-for="(image, key) in filmProduct.actors"
+                      class="mb-3 input-group"
+                      :key="key"
+                    >
+                      <input
+                        type="text"
+                        class="form-control form-control"
+                        v-model="filmProduct.actors[key]"
+                        placeholder="請輸入名字"
+                      />
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger"
+                        @click="filmProduct.actors.splice(key, 1)"
+                      >
+                        移除
+                      </button>
+                    </div>
+                    <div
+                      v-if="
+                        filmProduct.actors[filmProduct.actors.length - 1] ||
+                        !filmProduct.actors.length
+                      "
+                    >
+                      <button
+                        class="btn btn-outline-primary btn-sm d-block w-100"
+                        @click="filmProduct.actors.push('')"
+                      >
+                        新增演員名單
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="row gx-2">
+              <!-- <div class="row gx-2">
                 <div class="mb-3 col-md-6">
                   <label for="content" class="form-label"
                     >說明內容(暫時未設定)
@@ -269,41 +304,7 @@
                     ></textarea>
                   </label>
                 </div>
-                <div class="mb-3 col-md-6" v-if="filmProduct.actors">
-                  <div
-                    v-for="(image, key) in filmProduct.actors"
-                    class="mb-3 input-group"
-                    :key="key"
-                  >
-                    <input
-                      type="text"
-                      class="form-control form-control"
-                      v-model="filmProduct.actors[key]"
-                      placeholder="請輸入名字"
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-outline-danger"
-                      @click="filmProduct.actors.splice(key, 1)"
-                    >
-                      移除
-                    </button>
-                  </div>
-                  <div
-                    v-if="
-                      filmProduct.actors[filmProduct.actors.length - 1] ||
-                      !filmProduct.actors.length
-                    "
-                  >
-                    <button
-                      class="btn btn-outline-primary btn-sm d-block w-100"
-                      @click="filmProduct.actors.push('')"
-                    >
-                      新增演員名單
-                    </button>
-                  </div>
-                </div>
-              </div>
+              </div> -->
               <div class="mb-3">
                 <div class="form-check">
                   <label class="form-check-label mx-3" for="is_enabled">
@@ -455,20 +456,30 @@ export default {
     },
   },
   methods: {
-    // 座位數確認後調整
-    // addseat(index, i) {
-    //   this.filmProduct.test[index].detail.time[i].seat = [
-    //     { a: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
-    //     { b: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
-    //   ];
-    // },
+    // 確定日期後新增座位數
+    seatEdit() {
+      console.log(1);
+      let array = [];
+      for (let i = 0; i < 10; i += 1) {
+        const a = { seat: `A${i}`, state: 'none' };
+        const b = { seat: `B${i}`, state: 'none' };
+        const c = { seat: `C${i}`, state: 'none' };
+        const d = { seat: `D${i}`, state: 'none' };
+        const e = { seat: `E${i}`, state: 'none' };
+        array = [...array, a, b, c, d, e];
+      }
+      /* eslint-disable */
+      this.filmProduct.seat = array.sort((a, b) => {
+        if (a.seat > b.seat) {
+          return 1;
+        } else if (a.seat < b.seat) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    },
 
-    // showModal() {
-    //   this.modal.show();
-    // },
-    // hideModal() {
-    //   this.modal.hide();
-    // },
     uploadFile() {
       const uploadedFile = this.$refs.fileInput.files[0];
       const formData = new FormData();

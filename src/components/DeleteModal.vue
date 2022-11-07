@@ -20,7 +20,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header bg-warning">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">刪除場次</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">刪除品項</h1>
           <button
             type="button"
             class="btn-close"
@@ -33,9 +33,18 @@
             <p>日期:待設定</p>
             <p>
               <span>{{ product.theater }}</span>
+
               <span>{{ product.title }}</span>
+              <span v-if="product.code">折扣碼:{{ product.code }}</span>
+              <span v-if="product.price">$:{{ product.price }}</span>
             </p>
-            <p>
+            <p v-if="product.percent">
+              折數<span>{{ product.percent }}</span>
+            </p>
+            <p v-if="product.due_date">
+              到期日<span>{{ product.due_date }}</span>
+            </p>
+            <p v-if="product.time">
               場次時間<span>{{ product.time }}</span>
             </p>
           </h5>

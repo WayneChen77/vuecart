@@ -3,7 +3,7 @@
   <LoadingView :active="isLoading"></LoadingView>
 
   <div class="container">
-    <nav aria-label="breadcrumb " class="row">
+    <nav aria-label="breadcrumb" class="row">
       <ol class="breadcrumb col-10">
         <li class="breadcrumb-item">
           <a href="#" @click.prevent="isShowing = null" @Keyup.enter.prevent="isShowing = null"
@@ -23,7 +23,7 @@
             >Day:<input id="searchDay" type="date" v-model="searchDay"
           /></label>
         </li>
-        <li class="breadcrumb-item ">
+        <li class="breadcrumb-item">
           <label for="searchTitle" class="form-label"
             >Title:<input id="searchTitle" type="text" v-model="searchTitle"
           /></label>
@@ -33,39 +33,46 @@
     </nav>
   </div>
 
-  <table class="table mt-4 container">
+  <table class="table mt-4 container filmproduct">
     <thead>
       <tr>
-        <th width="120">分類</th>
-        <th>電影名稱</th>
+        <th class="rwd">分類</th>
+        <th class="rwdname">名稱</th>
         <th>影廳</th>
         <th>上映時間</th>
-        <th>級別</th>
-        <th>剩餘坐位</th>
-        <th width="120">全票</th>
-        <th width="120">學生票</th>
-        <th width="120">愛心票</th>
-        <th width="100">熱映中</th>
-        <th width="200">編輯</th>
+        <th>播放時間</th>
+        <th class="rwd">級別</th>
+        <th class="rwd">全票</th>
+        <th>熱映中</th>
+        <th>編輯</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="i in datastore" :key="i.id">
-        <td>{{ i.category }}</td>
-        <td>{{ i.title }}</td>
+        <td class="rwd">{{ i.category }}</td>
+        <td class="rwdname">
+          {{ i.title }} <br />
+          {{ `(${i.engtitle})` }}
+        </td>
         <td>{{ i.theater }}</td>
         <td>{{ i.day }}</td>
-        <td>{{ i.grand }}</td>
-        <td>{{ i.unit }}- i.售出</td>
-        <td class="text-right">{{ $filters.currency(i.origin_price) }}這個是原價要用來做別的</td>
-        <td class="text-right">{{ $filters.currency(i.price) }}以後是使用的價格</td>
-        <td class="text-right">{{ $filters.currency(i.price) * 0.4 }}以改成使用價格換算</td>
+        <td>
+          {{ i.day }}
+          <br />
+          {{ i.time }}
+        </td>
+        <td class="rwd">{{ i.grand }}</td>
+
+        <!-- <td class="text-right">{{ $filters.currency(i.origin_price) }}原價</td> -->
+        <td class="text-right rwd">{{ $filters.currency(i.price) }}</td>
+
         <td>
           <span class="text-success" v-if="i.is_showing"
-            >showwing{{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}</span
+            >show <br />{{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}</span
           >
           <span class="text-success" v-if="!i.is_showing"
-            >comming {{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}
+            >coming <br />
+            {{ i.is_enabled === 1 ? '(上架)' : '(下架)' }}
           </span>
         </td>
         <td>
@@ -103,8 +110,6 @@ export default {
       // 頁碼資料 傳往下層處理
       pagination: [],
 
-      // 岱刪除
-      testuse: {},
       // 要傳往modal處理的資料
       filmproduct: {},
       isNew: false,
@@ -247,4 +252,18 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.filmproduct {
+  @media (max-width: 480px) {
+    .rwd {
+      display: none;
+    }
+    .rwdname {
+      max-width: 90px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+</style>

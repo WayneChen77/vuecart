@@ -59,10 +59,10 @@
                 style="background-image: url(XXX.jpg)"
                 class="col-1 text-center ca"
                 :class="i.state"
-                @click="selectSeat(i)"
+                @click="selectSeat(i, index)"
               >
-                {{ i.i % 10 }}
-                {{ i.index }}
+                {{ i.seat }}
+
                 <!-- {{ i.state }} -->
               </button>
             </div>
@@ -72,7 +72,7 @@
           <div class="col-8">
             <p>
               已選座位:<span v-for="(item, index, key) in seatSelect" :key="key"
-                >{{ item.i }},</span
+                >{{ item.seat }},</span
               >
             </p>
           </div>
@@ -80,7 +80,16 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="hideModal">
               取消
             </button>
-            <button type="button" class="btn btn-primary">確定 {{ dataa }}</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="$emit('update-seat', seatSelect)"
+              :disabled="seatData.qty !== seatSelect.length"
+            >
+              確定
+            </button>
+            <!-- @click="updateCart" -->
+            <!-- :disabled="this.status.loadingItem === item.id" -->
           </div>
         </div>
       </div>
@@ -93,7 +102,7 @@ import modalmixiins from '@/mixins/modalmixins';
 
 export default {
   props: {
-    dataa: { type: Object },
+    seatData: { type: Object },
     default() {
       return {};
     },
@@ -107,44 +116,50 @@ export default {
       // 目前選中座位
       seatSelect: [],
       // 可選座位數
-      num: 3,
+      num: 1,
     };
   },
   methods: {
-    // 測試用新增座位
-    bt2() {
-      //   for (let i = 0; i < 20; i += 1) {
-      //     const a = { i, state: 'none' };
-      //     this.seatitem = [...this.seatitem, a];
-      //   }
-      console.log(this.dataa);
+    updateCart() {
+      // 這邊只進行客戶端購物車更新資料 伺服器端場次為更新 APi權限問題
+
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${this.seatData.id}`;
+      const cart = {
+        product_id: this.seatData.product_id,
+        qty: this.seatData.qty,
+        seatSelect: this.seatSelect,
+        // aldult: this.aldult,
+        // student: this.student,
+        // half: this.half,
+      };
+      this.$http.put(Api, { data: cart }).then((res) => {
+        console.log(res);
+      });
     },
+
     // 點擊座位函式
-    selectSeat(i) {
+    selectSeat(i, index) {
       if (i.state === 'none' && this.seatSelect.length === this.num) {
         alert('請先取消已選擇座位');
       } else if (i.state === 'none') {
-        this.seatitem[i.i].state = 'userselect';
+        this.seatitem[index].state = 'userselect';
         this.seatSelect.push(i);
       } else {
-        this.seatitem[i.i].state = 'none';
-        const b = this.seatSelect.filter((item) => item.i !== i.i);
+        this.seatitem[index].state = 'none';
+        const b = this.seatSelect.filter((item) => item.seat !== i.seat);
 
         this.seatSelect = b;
       }
     },
   },
-  // watch: {
-  //   // 選種座位
-  //   seatSelect(n) {
-  //     if (this.browseLog.indexOf(n) === -1) {
-  //       this.browseLog.unshift(n);
-  //       if (this.browseLog.length > 3) {
-  //         this.browseLog.pop();
-  //       }
-  //     }
-  //   },
-  // },
+
+  watch: {
+    // 選種座位
+    seatData() {
+      this.seatitem = this.seatData.product.seat;
+      this.num = this.seatData.qty;
+    },
+  },
   mixins: [modalmixiins],
 };
 </script>

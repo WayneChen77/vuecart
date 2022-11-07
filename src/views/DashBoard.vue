@@ -2,7 +2,7 @@
   <div class="container-fluid">
     後台管理
     <router-link class="text-dark" to="CouponView">coupon</router-link>
-    <router-link class="text-dark" to="EditCabdy">candy後台</router-link>
+    <router-link class="text-dark" to="EditCandy">candy後台</router-link>
     <router-link class="text-dark" to="filmproduct">film後台</router-link>
     <router-view></router-view>
   </div>

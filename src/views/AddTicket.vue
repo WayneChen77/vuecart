@@ -2,15 +2,25 @@
   <!-- 全域原件 -->
   <LoadingView :active="isLoading"></LoadingView>
 
-  <button @click="getusercarts">測試按鍵</button>
+  <button @click="qw">測試按鍵</button>
   <div class="container addticket">
     <div class="row">
-      <div class="col-12 col-sm-8" v-if="dataList">
+      <div class="col-12 col-sm-8" v-if="dataList.product">
         left
         <div class="box row">
           <div class="addgrand col-sm-2 col-4 my-3">
             <div class="card text-white">
-              <h5 class="card-header bg-success">0+</h5>
+              <h5 class="card-header" :class="`bg-${dataList.product.grand}`">
+                {{
+                  dataList.product.grand == 'G'
+                    ? '0+'
+                    : dataList.product.grand == 'P'
+                    ? '6+'
+                    : dataList.product.grand == 'PG'
+                    ? '12+'
+                    : '18+'
+                }}
+              </h5>
               <div class="card-body text-gray">
                 <p class="card-text">{{ dataList.product.grand }}</p>
               </div>
@@ -221,31 +231,32 @@
                       autocomplete="off"
                   /></label>
                 </div>
+                <!-- candys -->
                 <div class="productflex">
-                  <div class="card product">
-                    <img
-                      src="https://images.pexels.com/photos/2983100/pexels-photo-2983100.jpeg?cs=srgb&dl=pexels-jonathan-borba-2983100.jpg&fm=jpg&_gl=1*zzanli*_ga*MTQyOTQ4NzA2Ni4xNjY2MzE5MTU2*_ga_8JE65Q40S6*MTY2NzIwNDI2My44LjEuMTY2NzIwNDcyMC4wLjAuMA.."
-                      class="card-img-top"
-                      alt="..."
-                    />
+                  <div class="card product" v-for="(item, key) in Candys" :key="key">
+                    <img :src="item.imageUrl" class="card-img-top" :alt="item.title" />
                     <div class="cardhover">
                       <p class="hovertxt">
-                        <a
-                          href="https://images.pexels.com/photos/2983100/pexels-photo-2983100.jpeg?cs=srgb&dl=pexels-jonathan-borba-2983100.jpg&fm=jpg&_gl=1*zzanli*_ga*MTQyOTQ4NzA2Ni4xNjY2MzE5MTU2*_ga_8JE65Q40S6*MTY2NzIwNDI2My44LjEuMTY2NzIwNDcyMC4wLjAuMA.."
+                        <a :href="item.imageUrl"
                           ><span>.</span> <i class="bi bi-hand-index text-white border border-3"></i
                         ></a>
                       </p>
                     </div>
                     <div class="card-body position-absolute end-0 bottom-0">
-                      <h6 class="card-title">大杯可樂</h6>
-                      <span class="card-text pe-2">$110</span>
+                      <h6 class="card-title">
+                        {{ item.title }} <s class="text-gray">${{ item.origin_price }}</s>
+                      </h6>
+                      <span class="card-text pe-2">${{ item.price }}</span>
                       <select
                         aria-labelledby="lbl-main-menu-mob"
                         data-prompt-position="topLeft"
-                        class=""
+                        @change="addOnCandy(item)"
+                        v-model="candyqty"
                       >
-                        <option selected value="" disabled>0</option>
-                        <option>123</option>
+                        <option selected value="">0</option>
+                        <option v-for="(i, key) in number" :key="key">
+                          {{ i }}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -270,9 +281,10 @@
             <button class="btn btn-outline-secondary" type="button" @click="addCouponCode">
               套用會員折扣
             </button>
+            {{ dataList.seatSelect }}
           </div>
         </div>
-        <div class="card text-white my-5" v-if="dataList">
+        <div class="card text-white my-5" v-if="dataList.product">
           <h5 class="card-header bg-titleblue">:{{ dataList.product.title }}</h5>
           <div class="card-body text-gray">
             <p class="card-text">
@@ -298,19 +310,18 @@
                 >選擇座位
               </a>
             </p>
-
+            <p>{{ dataList.seat }}</p>
             <p v-if="dataList.final_total !== dataList.total">
               會員金額:{{ dataList.final_total }}
             </p>
           </div>
-          removeCartItem
         </div>
       </div>
     </div>
   </div>
   <!-- 區域原件 -->
 
-  <SeatModal ref="SeatModal" :dataa="dataList"></SeatModal>
+  <SeatModal ref="SeatModal" :seatData="dataList" @update-seat="seatClick"></SeatModal>
 </template>
 
 <script>
@@ -320,15 +331,21 @@ export default {
   data() {
     return {
       carts: [],
+      Candys: [],
+      seatSelect: [],
       // 總票數?
       number: 4,
+      candyqty: 0,
+      candyarray: [],
       aldult: 0,
       student: 0,
       half: 0,
       reduce: 0,
+      dataList: {},
       aldultPrices: 0,
       studentPrices: 0,
       halfPrices: 0,
+      qtynumber: 0,
       coupon_code: '',
       isload: false,
       isLoading: false,
@@ -336,30 +353,48 @@ export default {
   },
   components: { SeatModal },
   methods: {
+    qw() {
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
+
+      this.$http.get(Api).then((res) => {
+        console.log(res);
+        // this.$httpMessageState(response, '移除購物車品項');
+      });
+    },
     // 移除票資料
     removeCartItem() {
       this.isload = this.dataList.id;
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${this.dataList.id}`;
 
-      this.$http.delete(Api).then((response) => {
-        console.log(response);
+      this.$http.delete(Api).then((res) => {
+        console.log(res);
         // this.$httpMessageState(response, '移除購物車品項');
         this.$router.push('/FilmAboutView');
       });
     },
 
     // 更新票種
-    updateCart(item) {
+    seatClick(item) {
+      console.log('haha');
+      console.log(item);
+      this.seatSelect = item;
+      const modal = this.$refs.SeatModal;
+
+      modal.hideModal();
+      this.updateCart();
+    },
+    updateCart() {
       this.isload = true;
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart/${this.dataList.id}`;
       //   this.isLoading = true;
       //   this.status.loadingItem = item.id;
       const cart = {
         product_id: this.dataList.product_id,
-        qty: item,
+        qty: this.qtynumber,
+        seatSelect: this.seatSelect,
         aldult: this.aldult,
         student: this.student,
-        half: this.student,
+        half: this.half,
       };
       this.$http.put(Api, { data: cart }).then((res) => {
         console.log(res);
@@ -368,7 +403,23 @@ export default {
         this.getusercarts();
       });
     },
+    // 加購餐點
+    addOnCandy(item) {
+      const b = { candytitle: item.title, candyqty: this.candyqty };
+      if (this.candyarray.length === 0) {
+        this.candyarray.push(b);
+      } else {
+        const a = this.candyarray.map((i) => i.candytitle);
+        const c = a.indexOf(item.title);
 
+        if (c !== -1) {
+          this.candyarray.splice(c, 1);
+        }
+        console.log(this.candyarray);
+
+        this.candyarray.push(b);
+      }
+    },
     //  調整票整
     ticketType(i) {
       if (i === 'aldult') {
@@ -378,13 +429,13 @@ export default {
       } else {
         this.halfPrices = Number(this.half) * this.dataList.product.price * 0.5;
       }
-      const qtynumber = Number(this.aldult) + Number(this.student) + Number(this.half);
-      console.log(qtynumber);
+      this.qtynumber = Number(this.aldult) + Number(this.student) + Number(this.half);
+
       // eslint-disable-next-line
       this.reduce =
         // eslint-disable-next-line
         Number(this.student) * 20 + Number(this.half) * (this.dataList.product.price * 0.5);
-      this.updateCart(qtynumber);
+      this.updateCart();
     },
     addCouponCode() {
       const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/coupon`;
@@ -408,12 +459,23 @@ export default {
         .get(Api)
         .then((res) => {
           this.carts = res.data.data.carts;
-
+          this.filterCart();
           this.isLoading = false;
         })
         .catch((e) => {
           console.loc(e);
         });
+    },
+    // 篩選資料
+    // 利用router 篩選出選擇的電影品項ID 利用此ID取得購物車ID與資料
+    // 會有bug重複項被修改 因用同projid的品項都會重疊 僅單人練習使用 無法上線
+    filterCart() {
+      const a = this.carts.filter((item) => item.product_id === this.$route.params.id);
+      const b = a[0];
+      this.dataList = b;
+      this.aldult = b.aldult;
+      this.student = b.student;
+      this.half = b.half;
     },
 
     // 開啟modal
@@ -423,19 +485,46 @@ export default {
 
       modal.showModal();
     },
+    //  取得餐飲資料
+    getCandys() {
+      this.isLoading = true;
+
+      const Api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_CANDYPATH}/products`;
+
+      this.$http
+        .get(Api)
+        .then((res) => {
+          this.Candys = res.data.products;
+
+          this.isLoading = false;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
   },
   computed: {
     // 利用router 篩選出選擇的電影品項ID 利用此ID取得購物車ID與資料
-
-    dataList() {
-      const a = this.carts.filter((item) => item.product_id === this.$route.params.id);
-      console.log(a[0]);
-      return a[0];
-    },
+    // dataList() {
+    //   const a = this.carts.filter((item) => item.product_id === this.$route.params.id);
+    //   return a[0];
+    // },
   },
+  // watch: {
+  //   carts() {
+  //     const a = this.carts.filter((item) => item.product_id === this.$route.params.id);
+  //     const b = a[0];
+  //     this.dataList = b;
+  //     this.aldult = b.aldult;
+  //     this.student = b.student;
+  //     this.half = b.half;
+  //     console.log(this.dataList);
+  //   },
+  // },
 
   created() {
     this.getusercarts();
+    this.getCandys();
   },
 };
 </script>

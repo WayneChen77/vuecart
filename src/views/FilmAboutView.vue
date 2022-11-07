@@ -30,7 +30,7 @@
     <!-- <router-view /> -->
     <div class="row justify-content-md-center flex-wrap">
       <!--  用title篩選去除同名場次再去用字做迴圈 -->
-      <div class="card m-4 flex-wrap" v-for="i in datastore" :key="i.id">
+      <div class="card m-4 flex-wrap" v-for="(i, key) in datastore" :key="key">
         <div class="titleimg position-relative">
           <div class="triangle"><div class="triangletxt">文字</div></div>
 
@@ -44,7 +44,10 @@
             </p>
           </div>
         </div>
-        <span class="badge badge-pill badge-primary bg-primary w-25 grand">{{ i.grand }}</span>
+        <span class="badge badge-pill badge-primary w-25 grand" :class="`bg-${i.grand}`"
+          >{{ i.grand }}
+          {{ i.grand == 'G' ? '0+' : i.grand == 'P' ? '6+' : i.grand == 'PG' ? '12+' : '18+' }}
+        </span>
         <div class="card-body">
           <p class="rounded border border-gray w-25 text-gray text-center">{{ i.version }}</p>
 

@@ -12,18 +12,6 @@ const routes = [
     name: 'FilmAboutView',
 
     component: () => import('../views/FilmAboutView.vue'),
-    children: [
-      {
-        path: 'comming',
-        name: 'comming',
-        component: () => import('../views/CommingView.vue'),
-      },
-      {
-        path: 'showing',
-        name: 'showing',
-        component: () => import('../views/ShowingView.vue'),
-      },
-    ],
   },
   {
     path: '/userproduct/:id',
@@ -66,8 +54,8 @@ const routes = [
         component: () => import('../views/CouponView.vue'),
       },
       {
-        path: 'EditCabdy',
-        name: 'EditCabdy',
+        path: 'EditCandy',
+        name: 'EditCandy',
         component: () => import('../views/EditCandy.vue'),
       },
     ],

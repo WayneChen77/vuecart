@@ -325,6 +325,10 @@ $theme-colors: (
   'titleblue': $titleblue,
   'white': white,
   'gray': gray,
+  'G': green,
+  'P': $primary,
+  'PG': rgb(240, 179, 64),
+  'R': red,
 ) !default;
 // scss-docs-end theme-colors-map
 
